@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titre %}Mot de passe oublié — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container" style="max-width:480px">
+    <h1 class="titre-section">Mot de passe oublié</h1>
+    <p class="sous-titre">Saisissez l'adresse e-mail de votre compte. Nous vous envoyons un lien pour choisir un nouveau mot de passe.</p>
+    <form method="post" class="panneau mt-3" novalidate>{% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+      {% for f in form %}{% include "partials/champ.html" %}{% endfor %}
+      <button class="btn btn-fs w-100" type="submit">Envoyer le lien</button>
+    </form>
+    <p class="text-center text-muted mt-3"><a href="{% url 'connexion' %}">Retour à la connexion</a></p>
+  </div>
+</section>
+{% endblock %}

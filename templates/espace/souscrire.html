@@ -1,0 +1,25 @@
+{% extends "espace/base_espace.html" %}
+{% load fete %}
+{% block espace %}
+<h1 class="fs-2 mb-3">Formule {{ plan.nom }}</h1>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="panneau h-100">
+      <h2 class="fs-4">1. Envoyez {{ plan.prix_fcfa|fcfa }}</h2>
+      <p>{{ site.instructions_paiement }}</p>
+      {% if site.numero_mtn_momo %}<p class="mb-1"><b>MTN MoMo :</b> {{ site.numero_mtn_momo }}</p>{% endif %}
+      {% if site.numero_orange_money %}<p class="mb-1"><b>Orange Money :</b> {{ site.numero_orange_money }}</p>{% endif %}
+      {% if site.beneficiaire_paiement %}<p class="text-muted mb-0">Au nom de {{ site.beneficiaire_paiement }}</p>{% endif %}
+      {% if not site.numero_mtn_momo and not site.numero_orange_money %}<p class="text-muted mb-0">Les numéros de paiement seront communiqués par l'équipe.</p>{% endif %}
+    </div>
+  </div>
+  <div class="col-md-6">
+    <form method="post" class="panneau h-100" novalidate>{% csrf_token %}
+      <h2 class="fs-4">2. Confirmez votre paiement</h2>
+      {% for f in form %}{% include "partials/champ.html" %}{% endfor %}
+      <button class="btn btn-fs" type="submit">J'ai payé, envoyer la référence</button>
+      <a class="btn btn-link" href="{% url 'espace_abonnement' %}">Annuler</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

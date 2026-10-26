@@ -1,0 +1,243 @@
+/* ==========================================================================
+   Fête & Services — thème
+   Aubergine (soirée) + champagne (or doux) + rose framboise (action).
+   Motif signature : l'arche de mariage (hero, cartes, tuiles).
+   Polices : piles système, aucun chargement externe.
+   ========================================================================== */
+:root {
+  --aub: #2a1840;
+  --aub-2: #3b2459;
+  --champagne: #e9d5a1;
+  --or: #b8913a;
+  --perle: #fbf8fc;
+  --rose: #c23b66;
+  --rose-d: #a32d54;
+  --ink: #241b2f;
+  --muted: #6f6580;
+  --ligne: #e6ddeb;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+
+  --bs-body-bg: var(--perle);
+  --bs-body-color: var(--ink);
+  --bs-body-font-size: 1rem;
+  --bs-link-color-rgb: 163, 45, 84;
+  --bs-link-hover-color-rgb: 126, 32, 64;
+  --bs-border-color: var(--ligne);
+  --bs-primary: #c23b66;
+  --bs-primary-rgb: 194, 59, 102;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--perle); color: var(--ink); line-height: 1.6; }
+h1, h2, h3, h4, h5, .serif { font-family: var(--serif); color: var(--aub); font-weight: 600; letter-spacing: -0.01em; }
+a { text-underline-offset: 3px; }
+.text-muted, .muted { color: var(--muted) !important; }
+:focus-visible { outline: 3px solid var(--or); outline-offset: 2px; }
+img { max-width: 100%; }
+
+/* ---------- boutons ---------- */
+.btn { font-weight: 600; }
+.btn-fs, .btn-fs-or, .btn-fs-ligne {
+  --bs-btn-border-radius: 999px;
+  --bs-btn-padding-x: 1.35rem;
+  --bs-btn-padding-y: 0.55rem;
+  --bs-btn-focus-shadow-rgb: 184, 145, 58;
+}
+.btn-fs {
+  --bs-btn-color: #fff; --bs-btn-bg: var(--rose); --bs-btn-border-color: var(--rose);
+  --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--rose-d); --bs-btn-hover-border-color: var(--rose-d);
+  --bs-btn-active-color: #fff; --bs-btn-active-bg: var(--rose-d); --bs-btn-active-border-color: var(--rose-d);
+  --bs-btn-disabled-bg: var(--rose); --bs-btn-disabled-border-color: var(--rose);
+}
+.btn-fs-or {
+  --bs-btn-color: var(--aub); --bs-btn-bg: var(--champagne); --bs-btn-border-color: var(--champagne);
+  --bs-btn-hover-color: var(--aub); --bs-btn-hover-bg: #f2e3b8; --bs-btn-hover-border-color: #f2e3b8;
+  --bs-btn-active-color: var(--aub); --bs-btn-active-bg: #f2e3b8; --bs-btn-active-border-color: #f2e3b8;
+}
+.btn-fs-ligne {
+  --bs-btn-color: var(--aub); --bs-btn-bg: transparent; --bs-btn-border-color: var(--aub);
+  --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--aub); --bs-btn-hover-border-color: var(--aub);
+  --bs-btn-active-color: #fff; --bs-btn-active-bg: var(--aub); --bs-btn-active-border-color: var(--aub);
+}
+.btn-wa {
+  --bs-btn-color: #fff; --bs-btn-bg: #1f9d55; --bs-btn-border-color: #1f9d55;
+  --bs-btn-hover-color: #fff; --bs-btn-hover-bg: #187a43; --bs-btn-hover-border-color: #187a43;
+  --bs-btn-active-bg: #187a43; --bs-btn-active-border-color: #187a43; --bs-btn-active-color: #fff;
+  --bs-btn-border-radius: 999px;
+}
+
+/* ---------- formulaires ---------- */
+.form-control, .form-select { border-color: var(--ligne); border-radius: 12px; padding: 0.6rem 0.85rem; background-color: #fff; color: var(--ink); }
+.form-control:focus, .form-select:focus { border-color: var(--rose); box-shadow: 0 0 0 0.2rem rgba(194, 59, 102, 0.15); }
+.form-label { font-weight: 600; font-size: 0.92rem; margin-bottom: 0.3rem; }
+.form-check-input:checked { background-color: var(--rose); border-color: var(--rose); }
+.form-check-input:focus { border-color: var(--rose); box-shadow: 0 0 0 0.2rem rgba(194, 59, 102, 0.15); }
+.alert { border-radius: 14px; border: 1px solid var(--ligne); }
+.note-radios { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 0.15rem; }
+.note-radios input { position: absolute; opacity: 0; }
+.note-radios label { font-size: 1.9rem; line-height: 1; color: #d6cbdc; cursor: pointer; margin: 0; }
+.note-radios input:checked ~ label, .note-radios label:hover, .note-radios label:hover ~ label { color: var(--or); }
+.note-radios input:focus-visible + label { outline: 3px solid var(--or); border-radius: 6px; }
+
+/* ---------- navigation ---------- */
+.fs-nav { background: var(--aub); padding: 0.75rem 0; }
+.fs-nav .nav-link { color: rgba(255, 255, 255, 0.82); font-weight: 500; }
+.fs-nav .nav-link:hover, .fs-nav .nav-link.actif { color: var(--champagne); }
+.marque { font-family: var(--serif); font-size: 1.4rem; color: #fff !important; font-weight: 600; display: inline-flex; align-items: center; }
+.marque-arche { display: inline-block; width: 17px; height: 24px; margin-right: 0.6rem; border: 2px solid var(--champagne); border-radius: 999px 999px 3px 3px; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--aub); color: #fff; padding: 4rem 0 4.5rem; overflow: hidden; }
+.hero h1 { color: #fff; font-size: clamp(2.2rem, 5.2vw, 3.7rem); line-height: 1.08; max-width: 14ch; }
+.hero p.lead { color: rgba(255, 255, 255, 0.82); max-width: 46ch; font-size: 1.12rem; }
+.recherche-hero { background: #fff; border-radius: 22px; padding: 0.55rem; display: flex; flex-wrap: wrap; gap: 0.4rem; max-width: 560px; }
+.recherche-hero .form-control, .recherche-hero .form-select { border: 0; border-radius: 14px; flex: 1 1 160px; background-color: var(--perle); }
+.hero .petit { color: var(--champagne); font-size: 0.92rem; }
+
+.arches { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+.arche { position: relative; flex: 1 1 0; max-width: 190px; aspect-ratio: 3 / 5; border-radius: 999px 999px 14px 14px; overflow: hidden;
+  background: var(--c, var(--aub-2)); border: 2px solid rgba(233, 213, 161, 0.6); display: flex; align-items: center; justify-content: center;
+  color: #fff; text-decoration: none; animation: monter 0.9s cubic-bezier(.2, .7, .2, 1) both; }
+.arche:nth-child(2) { aspect-ratio: 3 / 6; animation-delay: 0.12s; }
+.arche:nth-child(3) { animation-delay: 0.24s; }
+.arche img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.arche .emoji { font-size: 3rem; }
+.arche .legende { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.6rem 0.6rem 0.7rem; text-align: center; font-size: 0.82rem; font-weight: 600;
+  background: linear-gradient(transparent, rgba(20, 8, 32, 0.78)); }
+@keyframes monter { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+
+/* ---------- sections ---------- */
+.section { padding: 3.6rem 0; }
+.section-sombre { background: var(--aub); color: #fff; }
+.section-sombre h2, .section-sombre h3 { color: #fff; }
+.titre-section { font-size: clamp(1.6rem, 3.2vw, 2.25rem); margin-bottom: 0.4rem; }
+.sous-titre { color: var(--muted); max-width: 58ch; }
+
+.cat { display: flex; align-items: center; gap: 0.85rem; padding: 0.8rem 1rem; background: #fff; border: 1px solid var(--ligne); border-radius: 18px;
+  color: var(--ink); text-decoration: none; height: 100%; }
+.cat:hover { border-color: var(--c); color: var(--ink); }
+.cat-emoji { flex: none; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-size: 1.45rem;
+  background: color-mix(in srgb, var(--c) 16%, white); }
+.cat b { font-family: var(--serif); font-weight: 600; font-size: 1.02rem; line-height: 1.2; display: block; }
+.cat small { color: var(--muted); }
+
+/* ---------- carte prestataire ---------- */
+.presta-carte { display: block; height: 100%; background: #fff; border: 1px solid var(--ligne); border-radius: 22px; padding: 10px 10px 0; color: inherit; text-decoration: none; }
+.presta-carte:hover { border-color: var(--or); color: inherit; }
+.presta-visuel { position: relative; aspect-ratio: 4 / 3; border-radius: 999px 999px 14px 14px; overflow: hidden;
+  background: color-mix(in srgb, var(--c) 22%, white); display: grid; place-items: center; }
+.presta-visuel img.fond { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.presta-emoji { font-size: 3rem; }
+.presta-logo { position: absolute; right: 12px; bottom: 10px; width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; background: #fff; }
+.presta-corps { padding: 0.9rem 0.6rem 1rem; }
+.presta-corps h3 { font-size: 1.18rem; margin: 0 0 0.15rem; }
+.presta-meta { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.etoiles { color: var(--or); letter-spacing: 1px; }
+.pastille { display: inline-block; font-size: 0.78rem; font-weight: 600; padding: 0.15rem 0.6rem; border-radius: 999px; background: color-mix(in srgb, var(--c, var(--rose)) 14%, white); color: var(--ink); }
+.pastille-ok { background: #e3f4ea; color: #14683a; }
+.pastille-att { background: #fdf0d9; color: #8a5a00; }
+.pastille-ko { background: #fbe3e8; color: #9b1f3f; }
+
+/* ---------- étapes ---------- */
+.etape { display: flex; gap: 1rem; align-items: flex-start; }
+.etape-num { flex: none; width: 2.4rem; height: 2.4rem; border-radius: 50%; border: 2px solid var(--or); color: var(--or); font-family: var(--serif); font-weight: 700; display: grid; place-items: center; }
+
+/* ---------- fiche prestataire ---------- */
+.couverture { height: clamp(190px, 30vw, 330px); border-radius: 26px; overflow: hidden; position: relative; background: color-mix(in srgb, var(--c) 30%, white); display: grid; place-items: center; }
+.couverture img { width: 100%; height: 100%; object-fit: cover; }
+.fiche-entete { display: flex; gap: 1rem; align-items: flex-end; margin: -2.2rem 1.2rem 1.4rem; position: relative; flex-wrap: wrap; }
+.fiche-logo { width: 84px; height: 84px; border-radius: 50%; border: 4px solid var(--perle); object-fit: cover; background: #fff; display: grid; place-items: center; font-size: 2rem; }
+.offre { background: #fff; border: 1px solid var(--ligne); border-radius: 18px; overflow: hidden; height: 100%; }
+.offre img, .offre .offre-vide { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: grid; place-items: center; font-size: 2.4rem; background: color-mix(in srgb, var(--c) 18%, white); cursor: zoom-in; }
+.offre-corps { padding: 0.85rem 1rem 1rem; }
+.prix { font-family: var(--serif); font-weight: 700; color: var(--aub); font-size: 1.1rem; }
+.galerie { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; }
+.galerie img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; cursor: zoom-in; }
+.contact-carte { background: #fff; border: 1px solid var(--ligne); border-radius: 22px; padding: 1.3rem; }
+@media (min-width: 992px) { .collant { position: sticky; top: 1.2rem; } }
+dl.details { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1.2rem; margin: 0; }
+dl.details dt { color: var(--muted); font-weight: 500; }
+dl.details dd { margin: 0; }
+.avis-item { padding: 0.9rem 0; border-bottom: 1px solid var(--ligne); }
+.avis-item:last-child { border: 0; }
+
+/* ---------- tarifs ---------- */
+.plan { background: #fff; border: 1px solid var(--ligne); border-radius: 26px; padding: 1.8rem; height: 100%; display: flex; flex-direction: column; }
+.plan.vedette { border: 2px solid var(--or); }
+.plan .montant { font-family: var(--serif); font-size: 2.5rem; font-weight: 700; color: var(--aub); line-height: 1; }
+.plan ul { list-style: none; padding: 0; margin: 1.2rem 0 1.6rem; flex: 1; }
+.plan li { padding: 0.3rem 0 0.3rem 1.5rem; position: relative; }
+.plan li::before { content: "✓"; position: absolute; left: 0; color: var(--or); font-weight: 700; }
+
+/* ---------- espace prestataire / compte ---------- */
+.espace-nav { display: flex; gap: 0.35rem; overflow-x: auto; padding-bottom: 0.4rem; }
+.espace-nav a { white-space: nowrap; padding: 0.5rem 0.95rem; border-radius: 999px; color: var(--ink); text-decoration: none; font-weight: 500; border: 1px solid transparent; }
+.espace-nav a:hover { border-color: var(--ligne); background: #fff; }
+.espace-nav a.actif { background: var(--aub); color: #fff; }
+@media (min-width: 992px) {
+  .espace-nav { flex-direction: column; overflow: visible; position: sticky; top: 1.2rem; }
+  .espace-nav a { border-radius: 14px; }
+}
+.stat { background: #fff; border: 1px solid var(--ligne); border-radius: 18px; padding: 1rem 1.2rem; height: 100%; }
+.stat b { display: block; font-family: var(--serif); font-size: 1.9rem; color: var(--aub); line-height: 1.1; }
+.panneau { background: #fff; border: 1px solid var(--ligne); border-radius: 22px; padding: 1.4rem; }
+.liste-verif { list-style: none; padding: 0; margin: 0; }
+.liste-verif li { padding: 0.45rem 0 0.45rem 2rem; position: relative; }
+.liste-verif li::before { content: "○"; position: absolute; left: 0.2rem; color: var(--muted); font-size: 1.1rem; }
+.liste-verif li.ok::before { content: "✓"; color: #14683a; font-weight: 700; }
+.vignette { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; background: var(--ligne); flex: none; }
+.vignette-galerie { position: relative; }
+.vignette-galerie img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; }
+.vignette-galerie form { position: absolute; top: 6px; right: 6px; }
+
+/* ---------- pied de page ---------- */
+.pied { background: var(--aub); color: rgba(255, 255, 255, 0.78); padding: 3rem 0 2rem; margin-top: 3rem; }
+.pied h4 { color: #fff; font-size: 1.05rem; }
+.pied a { color: var(--champagne); text-decoration: none; }
+.pied a:hover { text-decoration: underline; }
+.pied ul { list-style: none; padding: 0; margin: 0; }
+.pied li { padding: 0.12rem 0; }
+
+/* ---------- pied de page : liens légaux ---------- */
+.pied-legal { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid rgba(233, 213, 161, 0.25); font-size: 0.9rem; }
+.pied-legal span { color: rgba(255, 255, 255, 0.6); }
+
+/* ---------- bandeau cookies ---------- */
+.bandeau-cookies { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 1080; max-width: 640px; margin: 0 auto; display: flex; gap: 1rem; align-items: center;
+  background: var(--aub); color: #fff; padding: 0.85rem 1.1rem; border-radius: 18px; border: 1px solid rgba(233, 213, 161, 0.5); font-size: 0.92rem; box-shadow: 0 10px 30px rgba(20, 8, 32, 0.35); }
+.bandeau-cookies[hidden] { display: none; }
+.bandeau-cookies a { color: var(--champagne); }
+.bandeau-cookies .btn { flex: none; }
+@media (max-width: 575.98px) { .bandeau-cookies { flex-direction: column; align-items: stretch; text-align: left; } }
+
+/* ---------- pages légales ---------- */
+.legal-nav { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.legal-nav a { padding: 0.4rem 0.95rem; border-radius: 999px; border: 1px solid var(--ligne); background: #fff; color: var(--ink); text-decoration: none; font-weight: 500; font-size: 0.93rem; }
+.legal-nav a:hover { border-color: var(--or); }
+.legal-nav a.actif { background: var(--aub); border-color: var(--aub); color: #fff; }
+.texte-legal { max-width: 72ch; }
+.texte-legal h2 { font-size: 1.3rem; margin: 2.1rem 0 0.6rem; }
+.texte-legal p, .texte-legal li { line-height: 1.7; }
+.texte-legal li { margin-bottom: 0.3rem; }
+.texte-legal code { background: #f1eaf5; color: var(--aub); padding: 0.1rem 0.4rem; border-radius: 6px; }
+.texte-legal .table { --bs-table-bg: transparent; }
+
+/* ---------- pages d'erreur ---------- */
+.erreur { padding: 3.5rem 0 4.5rem; }
+.erreur-arche { width: min(290px, 78%); aspect-ratio: 3 / 4; margin: 12px auto; background: var(--aub); color: var(--champagne);
+  border-radius: 999px 999px 18px 18px; box-shadow: 0 0 0 10px var(--perle), 0 0 0 12px var(--champagne);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; animation: monter 0.9s cubic-bezier(.2, .7, .2, 1) both; }
+.erreur-emoji { font-size: 2.6rem; line-height: 1; }
+.erreur-code { font-family: var(--serif); font-size: clamp(3.4rem, 9vw, 4.8rem); font-weight: 600; line-height: 1; letter-spacing: 0.02em; }
+.erreur-titre { font-size: clamp(1.8rem, 4.2vw, 2.7rem); line-height: 1.12; max-width: 18ch; }
+@media (max-width: 767.98px) { .erreur { padding-top: 2rem; } .erreur-titre { max-width: none; } }
+
+@media (max-width: 575.98px) {
+  .hero { padding: 2.6rem 0 3rem; }
+  .arche .emoji { font-size: 2.2rem; }
+  .fiche-entete { margin-left: 0.4rem; margin-right: 0.4rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .arche, .erreur-arche { animation: none; }
+}

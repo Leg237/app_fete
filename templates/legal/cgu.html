@@ -1,0 +1,64 @@
+{% extends "legal/base_legal.html" %}
+{% block titre %}Conditions générales d'utilisation — {{ site.nom_site }}{% endblock %}
+{% block titre_page %}Conditions générales d'utilisation{% endblock %}
+{% block texte %}
+<h2>Article 1 — Objet</h2>
+<p>Les présentes conditions encadrent l'utilisation de la plateforme {{ site.nom_site }} (site web et application mobile), éditée par {{ site.editeur }}. La plateforme met en relation des personnes qui organisent un événement (mariage, baptême, anniversaire…) avec des prestataires de services : restauration, traiteur, pâtisserie, location de couverts, livraison, DJ, décoration, photographie, salles et services complémentaires. En créant un compte ou en utilisant la plateforme, vous acceptez ces conditions.</p>
+
+<h2>Article 2 — Définitions</h2>
+<ul>
+  <li><b>Visiteur</b> : toute personne qui consulte la plateforme, avec ou sans compte client.</li>
+  <li><b>Client</b> : visiteur titulaire d'un compte gratuit.</li>
+  <li><b>Prestataire</b> : professionnel ou particulier qui publie une vitrine pour proposer ses services.</li>
+  <li><b>Offre</b> : produit ou service décrit par un prestataire, avec ou sans prix.</li>
+  <li><b>Abonnement</b> : formule payante qui rend la vitrine d'un prestataire visible du public.</li>
+</ul>
+
+<h2>Article 3 — Accès et comptes</h2>
+<p>La consultation des prestataires est libre. La création d'un compte client est <b>gratuite</b> : elle permet d'envoyer des demandes de devis et de publier des avis. Le compte prestataire est gratuit à créer, mais la vitrine n'est publique que pendant la durée d'un abonnement actif (article 7).</p>
+<p>Vous devez avoir 18 ans révolus et fournir des informations exactes, notamment une adresse e-mail et un numéro de téléphone valides. Vous êtes responsable de la confidentialité de votre mot de passe et de toute activité réalisée depuis votre compte. Prévenez-nous sans délai en cas d'utilisation non autorisée.</p>
+
+<h2>Article 4 — Rôle de la plateforme</h2>
+<p>{{ site.nom_site }} est un intermédiaire technique de mise en relation. La plateforme n'est <b>pas partie</b> aux contrats conclus entre un client et un prestataire. Les prix, disponibilités, délais, devis et la qualité des prestations relèvent de la seule responsabilité du prestataire. Nous vérifions les profils à l'inscription, sans pouvoir garantir l'exactitude de toutes les informations publiées ni le déroulement d'une prestation.</p>
+
+<h2>Article 5 — Obligations des prestataires</h2>
+<p>Le prestataire s'engage à :</p>
+<ul>
+  <li>publier des informations, photos et tarifs réels, à jour et non trompeurs ;</li>
+  <li>disposer des droits sur les images et textes qu'il publie (photos, logos, descriptions) ;</li>
+  <li>respecter la réglementation applicable à son activité, y compris les autorisations et règles d'hygiène lorsqu'elles s'imposent (restauration, traiteur, pâtisserie) ;</li>
+  <li>répondre aux demandes de devis dans un délai raisonnable ;</li>
+  <li>ne publier aucun contenu illicite, diffamatoire, discriminatoire, violent, contrefaisant ou à caractère sexuel.</li>
+</ul>
+
+<h2>Article 6 — Validation et visibilité</h2>
+<p>Chaque profil prestataire est vérifié par l'équipe, en général sous 24 heures. Nous pouvons refuser un profil en indiquant le motif. Une vitrine est visible du public si, et seulement si, le profil est <b>validé</b> et l'abonnement est <b>actif</b>. À l'expiration de l'abonnement, la vitrine est automatiquement retirée de la liste publique ; les contenus du prestataire restent conservés dans son espace.</p>
+
+<h2>Article 7 — Abonnements et paiement</h2>
+<p>Les formules, leurs prix en francs CFA (FCFA), leur durée et leurs limites (nombre de photos et d'offres, mise en avant) sont indiqués sur la page « Tarifs » et peuvent évoluer pour les futures souscriptions. Le paiement s'effectue par Mobile Money (MTN MoMo ou Orange Money) vers le numéro indiqué sur la plateforme. Le prestataire saisit ensuite la référence de la transaction ; l'abonnement est activé après vérification du paiement par l'équipe.</p>
+<p>L'abonnement court à partir de son activation pour la durée de la formule choisie. Un renouvellement souscrit avant l'échéance démarre à la fin de l'abonnement en cours. Il n'y a pas de reconduction automatique. Les sommes versées ne sont pas remboursables, sauf erreur de paiement ou indisponibilité du service imputable à la plateforme.</p>
+
+<h2>Article 8 — Clients, demandes de devis et avis</h2>
+<p>Une demande de devis transmet au prestataire concerné votre nom, votre numéro de téléphone et les informations saisies sur votre événement. Les avis doivent refléter une expérience réelle, rester courtois et ne pas contenir de données personnelles de tiers. Nous pouvons supprimer un avis faux, injurieux ou hors sujet.</p>
+
+<h2>Article 9 — Propriété intellectuelle</h2>
+<p>La plateforme, son identité visuelle, ses textes et son code appartiennent à {{ site.editeur }} ou à ses concédants. Le prestataire reste propriétaire de ses contenus et accorde à la plateforme une licence non exclusive, gratuite et limitée à la durée de son compte, pour les afficher sur le site et dans l'application, y compris sous une taille réduite.</p>
+
+<h2>Article 10 — Données personnelles</h2>
+<p>Le traitement de vos données est décrit dans la <a href="{% url 'confidentialite' %}">politique de confidentialité</a> et la <a href="{% url 'cookies' %}">politique relative aux cookies</a>.</p>
+
+<h2>Article 11 — Responsabilité</h2>
+<p>Nous mettons tout en œuvre pour assurer la disponibilité de la plateforme, sans pouvoir garantir un accès ininterrompu (maintenance, panne de réseau, cas de force majeure). Dans les limites permises par la loi, {{ site.editeur }} n'est pas responsable des litiges entre clients et prestataires, ni des dommages résultant d'une prestation, d'un contenu publié par un tiers ou d'un lien externe (par exemple WhatsApp).</p>
+
+<h2>Article 12 — Suspension et fermeture de compte</h2>
+<p>En cas de manquement aux présentes conditions (informations fausses, contenus illicites, fraude au paiement, comportement abusif), nous pouvons suspendre ou supprimer un compte, avec ou sans préavis selon la gravité. Vous pouvez demander la fermeture de votre compte à tout moment à l'adresse indiquée à l'article 15.</p>
+
+<h2>Article 13 — Modification des conditions</h2>
+<p>Nous pouvons modifier ces conditions pour tenir compte de l'évolution du service ou de la loi. La date de mise à jour figure en haut de la page. Les modifications importantes sont signalées aux utilisateurs ; l'utilisation de la plateforme après leur publication vaut acceptation.</p>
+
+<h2>Article 14 — Droit applicable et litiges</h2>
+<p>Les présentes conditions sont soumises au droit camerounais. En cas de différend, les parties recherchent d'abord une solution amiable. À défaut, les tribunaux compétents de {{ site.ville_siege }} (Cameroun) sont seuls compétents, sous réserve des règles impératives applicables aux consommateurs.</p>
+
+<h2>Article 15 — Contact</h2>
+<p>Pour toute question : {% if site.email_contact %}<a href="mailto:{{ site.email_contact }}">{{ site.email_contact }}</a>{% else %}l'adresse e-mail de contact de la plateforme{% endif %}{% if site.whatsapp_lien %}, ou sur <a href="{{ site.whatsapp_lien }}" target="_blank" rel="noopener">WhatsApp</a>{% endif %}.</p>
+{% endblock %}

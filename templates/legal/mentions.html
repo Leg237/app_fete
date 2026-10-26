@@ -1,0 +1,36 @@
+{% extends "legal/base_legal.html" %}
+{% block titre %}Mentions légales — {{ site.nom_site }}{% endblock %}
+{% block titre_page %}Mentions légales{% endblock %}
+{% block texte %}
+<h2>Éditeur du site</h2>
+<ul class="list-unstyled">
+  <li><b>{{ site.editeur }}</b>{% if site.forme_juridique %}, {{ site.forme_juridique }}{% endif %}</li>
+  {% if site.adresse_siege %}<li>Siège : {{ site.adresse_siege }}</li>{% endif %}
+  {% if site.rccm %}<li>RCCM : {{ site.rccm }}</li>{% endif %}
+  {% if site.niu %}<li>NIU : {{ site.niu }}</li>{% endif %}
+  {% if site.telephone_contact %}<li>Téléphone : {{ site.telephone_contact }}</li>{% endif %}
+  {% if site.email_contact %}<li>E-mail : <a href="mailto:{{ site.email_contact }}">{{ site.email_contact }}</a></li>{% endif %}
+  {% if site.whatsapp_lien %}<li>WhatsApp : <a href="{{ site.whatsapp_lien }}" target="_blank" rel="noopener">{{ site.whatsapp_admin }}</a></li>{% endif %}
+</ul>
+
+<h2>Directeur de la publication</h2>
+<p>{% if site.directeur_publication %}{{ site.directeur_publication }}{% else %}Le représentant légal de {{ site.editeur }}.{% endif %}</p>
+
+<h2>Hébergement</h2>
+<p>{% if site.hebergeur_nom %}{{ site.hebergeur_nom }}{% if site.hebergeur_adresse %}, {{ site.hebergeur_adresse }}{% endif %}{% if site.hebergeur_pays %} ({{ site.hebergeur_pays }}){% endif %}.{% else %}Informations sur l'hébergeur à renseigner.{% endif %}</p>
+
+<h2>Propriété intellectuelle</h2>
+<p>La structure, le design, les textes et le code de la plateforme sont protégés. Toute reproduction sans autorisation écrite est interdite. Les photos, logos et descriptions des vitrines appartiennent aux prestataires qui les publient et sous leur responsabilité.</p>
+
+<h2>Contenus publiés par les utilisateurs</h2>
+<p>Les prestataires et les clients sont responsables des contenus qu'ils publient. Pour signaler un contenu illicite ou une atteinte à vos droits, écrivez-nous en indiquant l'adresse de la page concernée{% if site.email_contact %} : <a href="mailto:{{ site.email_contact }}">{{ site.email_contact }}</a>{% endif %}. Nous retirons rapidement tout contenu manifestement illicite.</p>
+
+<h2>Données personnelles et cookies</h2>
+<p>Consultez la <a href="{% url 'confidentialite' %}">politique de confidentialité</a> et la <a href="{% url 'cookies' %}">politique relative aux cookies</a>.</p>
+
+<h2>Technologies utilisées</h2>
+<p>Le site est construit avec Django (licence BSD) et Bootstrap (licence MIT).</p>
+
+<h2>Droit applicable</h2>
+<p>Le site est soumis au droit camerounais. Les tribunaux de {{ site.ville_siege }} sont compétents, sous réserve des règles impératives applicables.</p>
+{% endblock %}

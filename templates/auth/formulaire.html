@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titre %}{{ titre }} — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container" style="max-width:600px">
+    <h1 class="titre-section">{% if categorie %}<span aria-hidden="true">{{ categorie.emoji }}</span> {% endif %}{{ titre }}</h1>
+    <p class="sous-titre">{{ sous_titre }}</p>
+    <form method="post" class="panneau mt-3" novalidate>{% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+      {% for f in form %}{% include "partials/champ.html" %}{% endfor %}
+      <p class="small text-muted">Lisez les <a href="{% url 'cgu' %}" target="_blank" rel="noopener">conditions d'utilisation</a> et la <a href="{% url 'confidentialite' %}" target="_blank" rel="noopener">politique de confidentialité</a>.</p>
+      <button class="btn btn-fs w-100" type="submit">{{ bouton }}</button>
+    </form>
+    <p class="text-center text-muted mt-3">Déjà inscrit ? <a href="{% url 'connexion' %}">Se connecter</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "erreur.html" %}
+{% block titre %}Page introuvable — {{ site.nom_site }}{% endblock %}
+{% block emoji %}🥂{% endblock %}
+{% block code %}404{% endblock %}
+{% block h1 %}Cette page n'existe pas, ou plus.{% endblock %}
+{% block message %}L'adresse a peut-être changé, ou le prestataire n'est plus en ligne. Cherchez directement ce qu'il vous faut pour votre fête.{% endblock %}
+{% block extra %}
+  <form class="recherche-hero mt-4" action="{% url 'prestataires' %}" method="get" role="search" style="border:1px solid var(--ligne)">
+    <input class="form-control" type="search" name="q" placeholder="Traiteur, DJ, salle, couverts…" aria-label="Que cherchez-vous ?">
+    <button class="btn btn-fs" type="submit">Rechercher</button>
+  </form>
+  {% if categories_menu %}
+  <div class="d-flex flex-wrap gap-2 mt-3">
+    {% for c in categories_menu|slice:":6" %}<a class="pastille text-decoration-none" style="--c: {{ c.couleur }}" href="{% url 'prestataires' %}?categorie={{ c.slug }}">{{ c.emoji }} {{ c.nom }}</a>{% endfor %}
+  </div>
+  {% endif %}
+{% endblock %}

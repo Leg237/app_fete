@@ -1,0 +1,59 @@
+{% extends "legal/base_legal.html" %}
+{% block titre %}Politique de confidentialité — {{ site.nom_site }}{% endblock %}
+{% block titre_page %}Politique de confidentialité{% endblock %}
+{% block texte %}
+<p>Nous traitons vos données personnelles avec soin et dans le respect de la loi camerounaise n° 2024/017 du 23 décembre 2024 relative à la protection des données à caractère personnel. Cette page explique quelles données nous collectons, pourquoi, et comment exercer vos droits.</p>
+
+<h2>1. Responsable du traitement</h2>
+<p>{{ site.editeur }}{% if site.forme_juridique %}, {{ site.forme_juridique }}{% endif %}{% if site.adresse_siege %}, {{ site.adresse_siege }}{% endif %}. Contact pour vos données : {% if site.email_contact %}<a href="mailto:{{ site.email_contact }}">{{ site.email_contact }}</a>{% else %}l'adresse e-mail de contact de la plateforme{% endif %}.</p>
+
+<h2>2. Données collectées</h2>
+<div class="table-responsive"><table class="table table-sm align-middle">
+  <thead><tr><th>Qui</th><th>Données</th></tr></thead>
+  <tbody>
+    <tr><td>Tous les comptes</td><td>Nom, adresse e-mail, téléphone, ville, mot de passe (conservé sous forme chiffrée, jamais en clair), date d'acceptation des conditions.</td></tr>
+    <tr><td>Prestataires</td><td>Nom de l'entreprise, catégorie, présentation, adresse, numéro WhatsApp, logo, photos, offres et prix, informations propres à l'activité, historique des abonnements (formule, montant, moyen de paiement, numéro utilisé, référence de la transaction).</td></tr>
+    <tr><td>Clients</td><td>Demandes de devis (type de fête, date, budget, message) et avis publiés.</td></tr>
+    <tr><td>Toute personne</td><td>Données techniques de connexion (adresse IP, navigateur, pages demandées) conservées dans les journaux du serveur pour la sécurité, et cookies indispensables (voir la <a href="{% url 'cookies' %}">page cookies</a>).</td></tr>
+  </tbody>
+</table></div>
+<p>Nous ne collectons ni numéro de carte bancaire, ni code secret Mobile Money. Le paiement se fait directement dans votre application Mobile Money.</p>
+
+<h2>3. Pourquoi nous utilisons ces données</h2>
+<ul>
+  <li><b>Fournir le service</b> : créer et gérer votre compte, publier les vitrines, transmettre vos demandes de devis, gérer les abonnements et vérifier les paiements.</li>
+  <li><b>Assurer la sécurité</b> : prévenir les fraudes et les abus, protéger les comptes, récupérer un mot de passe.</li>
+  <li><b>Respecter la loi</b> : obligations comptables et demandes des autorités compétentes.</li>
+  <li><b>Vous écrire</b> : e-mails liés à votre compte (réinitialisation de mot de passe, activation d'abonnement). Nous n'envoyons pas de publicité sans votre accord.</li>
+</ul>
+
+<h2>4. Qui voit vos données</h2>
+<ul>
+  <li><b>Le public</b> voit la fiche d'un prestataire validé et abonné (nom, ville, description, photos, offres, numéro de téléphone et WhatsApp) et les avis (prénom ou nom indiqué à l'inscription et commentaire).</li>
+  <li><b>Un prestataire</b> reçoit votre nom, votre téléphone et le contenu de la demande que vous lui envoyez, et uniquement celle-là.</li>
+  <li><b>L'équipe de la plateforme</b> y accède pour gérer le service et l'assistance.</li>
+  <li><b>Notre hébergeur</b> stocke les données pour notre compte{% if site.hebergeur_nom %} : {{ site.hebergeur_nom }}{% endif %}.</li>
+</ul>
+<p>Nous ne vendons pas vos données. Lorsque vous cliquez sur un lien WhatsApp, vous quittez la plateforme et WhatsApp applique ses propres règles.</p>
+
+<h2>5. Durée de conservation</h2>
+<p>Vos données de compte sont conservées tant que le compte est ouvert. Après sa fermeture, elles sont supprimées ou anonymisées dans un délai raisonnable, à l'exception de celles que nous devons garder pour répondre à une obligation légale (par exemple les justificatifs de paiement des abonnements) ou défendre nos droits. Les journaux techniques sont conservés pour une durée limitée.</p>
+
+<h2>6. Hébergement et transferts hors du Cameroun</h2>
+<p>Les données sont hébergées {% if site.hebergeur_pays %}en <b>{{ site.hebergeur_pays }}</b>{% else %}chez notre hébergeur{% endif %}. Lorsque les données sont stockées en dehors du Cameroun, nous veillons à ce que le transfert respecte les conditions fixées par la loi n° 2024/017, notamment l'exigence d'un niveau de protection suffisant et, lorsque la loi le demande, l'autorisation préalable de l'Autorité de protection des données à caractère personnel.</p>
+
+<h2>7. Vos droits</h2>
+<p>Vous pouvez à tout moment demander l'accès à vos données, leur rectification, leur suppression, ou vous opposer à certains traitements. Vous pouvez corriger la plupart des informations vous-même depuis votre compte. Pour les autres demandes, écrivez-nous à {% if site.email_contact %}<a href="mailto:{{ site.email_contact }}">{{ site.email_contact }}</a>{% else %}l'adresse de contact de la plateforme{% endif %} en précisant le compte concerné ; nous pouvons vous demander de prouver votre identité. Si vous estimez que vos droits ne sont pas respectés, vous pouvez saisir l'Autorité de protection des données à caractère personnel.</p>
+
+<h2>8. Sécurité</h2>
+<p>Les mots de passe sont chiffrés, les accès à l'administration sont restreints à l'équipe et la plateforme doit être consultée en connexion sécurisée (HTTPS). En cas de violation de données susceptible de vous affecter, nous vous informons ainsi que l'autorité compétente, dans les conditions prévues par la loi.</p>
+
+<h2>9. Mineurs</h2>
+<p>Le service s'adresse aux personnes de 18 ans et plus. Si vous pensez qu'un mineur nous a transmis des données, contactez-nous pour les supprimer.</p>
+
+<h2>10. Application mobile</h2>
+<p>L'application enregistre sur votre téléphone votre jeton de connexion et l'adresse du serveur, pour vous éviter de vous reconnecter à chaque ouverture. Elle ne contient ni publicité ni outil de suivi de votre activité. Vous pouvez effacer ces informations en vous déconnectant.</p>
+
+<h2>11. Modifications</h2>
+<p>Nous pouvons mettre à jour cette politique ; la date de mise à jour figure en haut de la page.</p>
+{% endblock %}

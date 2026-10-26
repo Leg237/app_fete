@@ -1,0 +1,10 @@
+{% extends "erreur.html" %}
+{% block titre %}Accès refusé — {{ site.nom_site }}{% endblock %}
+{% block emoji %}🔒{% endblock %}
+{% block code %}403{% endblock %}
+{% block h1 %}Vous n'avez pas accès à cette page.{% endblock %}
+{% block message %}{% if user.is_authenticated %}Votre compte n'a pas l'autorisation de voir cette page. Les espaces prestataires sont réservés à leur propriétaire.{% else %}Connectez-vous avec le compte concerné pour continuer.{% endif %}{% endblock %}
+{% block actions %}
+  {% if not user.is_authenticated %}<a class="btn btn-fs" href="{% url 'connexion' %}">Me connecter</a>{% endif %}
+  <a class="btn {% if user.is_authenticated %}btn-fs{% else %}btn-fs-ligne{% endif %}" href="{% url 'accueil' %}">Retour à l'accueil</a>
+{% endblock %}

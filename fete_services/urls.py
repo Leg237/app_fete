@@ -1,0 +1,18 @@
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/v1/", include("core.api_urls")),
+    path("", include("core.urls")),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler400 = "core.views.erreur_400"
+handler403 = "core.views.erreur_403"
+handler404 = "core.views.erreur_404"
+handler500 = "core.views.erreur_500"

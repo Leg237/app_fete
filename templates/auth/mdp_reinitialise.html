@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block titre %}Mot de passe modifié — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container" style="max-width:560px">
+    <div class="panneau text-center py-5">
+      <p style="font-size:3rem" class="mb-2" aria-hidden="true">🎉</p>
+      <h1 class="fs-2">Mot de passe modifié</h1>
+      <p class="text-muted">Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.</p>
+      <a class="btn btn-fs" href="{% url 'connexion' %}">Me connecter</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

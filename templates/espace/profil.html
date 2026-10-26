@@ -1,0 +1,13 @@
+{% extends "espace/base_espace.html" %}
+{% block espace %}
+<h1 class="fs-2 mb-3">Mon profil</h1>
+<div class="d-flex gap-3 align-items-center mb-3">
+  {% if p.logo %}<img class="vignette rounded-circle" src="{{ p.logo.url }}" alt="Logo actuel">{% endif %}
+  {% if p.couverture %}<img class="vignette" style="width:120px" src="{{ p.couverture.url }}" alt="Couverture actuelle">{% endif %}
+</div>
+<form method="post" enctype="multipart/form-data" class="panneau" novalidate>{% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+  {% for f in form %}{% include "partials/champ.html" %}{% endfor %}
+  <button class="btn btn-fs" type="submit">Enregistrer</button>
+</form>
+{% endblock %}

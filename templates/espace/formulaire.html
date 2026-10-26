@@ -1,0 +1,10 @@
+{% extends "espace/base_espace.html" %}
+{% block espace %}
+<h1 class="fs-2 mb-3">{{ titre }}</h1>
+<form method="post" {% if multipart %}enctype="multipart/form-data"{% endif %} class="panneau" novalidate>{% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+  {% for f in form %}{% include "partials/champ.html" %}{% endfor %}
+  <button class="btn btn-fs" type="submit">Enregistrer</button>
+  <a class="btn btn-link" href="{% url retour %}">Annuler</a>
+</form>
+{% endblock %}

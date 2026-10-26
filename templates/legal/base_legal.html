@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block contenu %}
+<section class="section">
+  <div class="container" style="max-width:860px">
+    {% with page=request.resolver_match.url_name %}
+    <nav class="legal-nav" aria-label="Pages légales">
+      <a href="{% url 'cgu' %}" class="{% if page == 'cgu' %}actif{% endif %}">Conditions d'utilisation</a>
+      <a href="{% url 'confidentialite' %}" class="{% if page == 'confidentialite' %}actif{% endif %}">Confidentialité</a>
+      <a href="{% url 'mentions_legales' %}" class="{% if page == 'mentions_legales' %}actif{% endif %}">Mentions légales</a>
+      <a href="{% url 'cookies' %}" class="{% if page == 'cookies' %}actif{% endif %}">Cookies</a>
+    </nav>
+    {% endwith %}
+    {% if user.is_staff and not site.adresse_siege %}
+      <div class="alert alert-warning mt-3">Complétez les informations légales (raison sociale, adresse, RCCM, hébergeur…) dans <a href="{% url 'admin:core_parametressite_changelist' %}">Administration &gt; Paramètres du site</a> avant la mise en ligne. Ce message n'est visible que par l'équipe.</div>
+    {% endif %}
+    <h1 class="titre-section mt-4">{% block titre_page %}{% endblock %}</h1>
+    <p class="text-muted">Dernière mise à jour : 23 octobre 2026</p>
+    <div class="texte-legal">{% block texte %}{% endblock %}</div>
+  </div>
+</section>
+{% endblock %}

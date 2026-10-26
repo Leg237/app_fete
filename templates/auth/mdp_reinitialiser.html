@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titre %}Nouveau mot de passe — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container" style="max-width:480px">
+    {% if validlink %}
+      <h1 class="titre-section">Choisir un nouveau mot de passe</h1>
+      <form method="post" class="panneau mt-3" novalidate>{% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+        {% for f in form %}{% include "partials/champ.html" %}{% endfor %}
+        <button class="btn btn-fs w-100" type="submit">Enregistrer le mot de passe</button>
+      </form>
+    {% else %}
+      <div class="panneau text-center py-5">
+        <p style="font-size:3rem" class="mb-2" aria-hidden="true">⏳</p>
+        <h1 class="fs-2">Ce lien n'est plus valable</h1>
+        <p class="text-muted">Le lien a expiré ou a déjà été utilisé. Demandez-en un nouveau, il sera valable 24 heures.</p>
+        <a class="btn btn-fs" href="{% url 'mdp_oublie' %}">Demander un nouveau lien</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

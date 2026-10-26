@@ -1,0 +1,28 @@
+{% extends "espace/base_espace.html" %}
+{% load fete %}
+{% block espace %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h1 class="fs-2 mb-0">Mes offres</h1>
+  {% if offres|length < limite %}<a class="btn btn-fs" href="{% url 'espace_offre_ajout' %}">Ajouter une offre</a>
+  {% else %}<a class="btn btn-fs-ligne" href="{% url 'espace_abonnement' %}">Limite atteinte : voir les formules</a>{% endif %}
+</div>
+<p class="text-muted">Chaque offre apparaît avec sa photo sur votre page et dans l'application. {{ offres|length }} sur {{ limite }} utilisées.</p>
+
+<div class="panneau">
+  {% for o in offres %}
+    <div class="d-flex gap-3 align-items-center avis-item">
+      {% if o.image %}<img class="vignette" src="{{ o.image.url }}" alt="{{ o.titre }}">{% else %}<span class="vignette d-grid" style="place-items:center">{{ p.categorie.emoji }}</span>{% endif %}
+      <div class="flex-grow-1">
+        <b>{{ o.titre }}</b> {% if not o.actif %}<span class="pastille pastille-att">Masquée</span>{% endif %}
+        <div class="text-muted small">{{ o.prix|fcfa }}{% if o.prix and o.unite_prix %} {{ o.unite_prix }}{% endif %}</div>
+      </div>
+      <a class="btn btn-fs-ligne btn-sm" href="{% url 'espace_offre_modif' o.pk %}">Modifier</a>
+      <form method="post" action="{% url 'espace_offre_suppr' o.pk %}" onsubmit="return confirm('Supprimer cette offre ?')">{% csrf_token %}
+        <button class="btn btn-sm btn-outline-danger" type="submit">Supprimer</button>
+      </form>
+    </div>
+  {% empty %}
+    <p class="text-muted mb-0">Aucune offre. Ajoutez vos produits ou services avec une photo et un prix : par exemple « Assiettes, lot de 100 ».</p>
+  {% endfor %}
+</div>
+{% endblock %}

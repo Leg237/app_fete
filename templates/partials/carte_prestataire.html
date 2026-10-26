@@ -1,0 +1,17 @@
+{% load fete %}
+<a class="presta-carte" href="{% url 'prestataire' p.slug %}" style="--c: {{ p.categorie.couleur }}">
+  <div class="presta-visuel">
+    {% if p.couverture %}<img class="fond" src="{{ p.couverture.url }}" alt="{{ p.nom }}" loading="lazy">
+    {% elif p.logo %}<img class="fond" src="{{ p.logo.url }}" alt="{{ p.nom }}" loading="lazy">
+    {% else %}<span class="presta-emoji" aria-hidden="true">{{ p.categorie.emoji }}</span>{% endif %}
+    {% if p.couverture and p.logo %}<img class="presta-logo" src="{{ p.logo.url }}" alt="" loading="lazy">{% endif %}
+  </div>
+  <div class="presta-corps">
+    <h3>{{ p.nom }}</h3>
+    <p class="presta-meta">{{ p.categorie.nom }} à {{ p.ville.nom }}</p>
+    <p class="presta-meta mb-0">
+      {% if p.nb_avis_calc %}<span class="etoiles">{{ p.note_moy|etoiles }}</span> {{ p.note_moy|floatformat:1 }} ({{ p.nb_avis_calc }} avis)
+      {% else %}Nouveau sur la plateforme{% endif %}
+    </p>
+  </div>
+</a>

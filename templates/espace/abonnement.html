@@ -1,0 +1,45 @@
+{% extends "espace/base_espace.html" %}
+{% load fete %}
+{% block espace %}
+<h1 class="fs-2 mb-3">Mon abonnement</h1>
+
+{% if abo %}
+  <div class="panneau mb-4">
+    <span class="pastille pastille-ok">Actif</span>
+    <p class="fs-4 serif mb-0 mt-2">Formule {{ abo.plan.nom }}</p>
+    <p class="text-muted mb-0">Jusqu'au {{ abo.fin|date:"d/m/Y" }}, soit {{ abo.jours_restants }} jour{{ abo.jours_restants|pluralize }}. Votre page est visible des clients si votre profil est validé.</p>
+  </div>
+{% elif abo_attente %}
+  <div class="alert alert-info">Votre paiement de {{ abo_attente.montant|fcfa }} ({{ abo_attente.plan.nom }}, référence {{ abo_attente.reference_paiement }}) est en cours de vérification. L'activation se fait en général sous 24 heures.</div>
+{% else %}
+  <div class="alert alert-warning">Vous n'avez pas d'abonnement actif : votre page n'est pas visible des clients. Choisissez une formule.</div>
+{% endif %}
+
+<h2 class="fs-3 mb-3">{% if abo %}Renouveler ou changer de formule{% else %}Choisir une formule{% endif %}</h2>
+<div class="row g-3 mb-4">
+  {% for pl in plans %}
+  <div class="col-md-4">
+    <div class="plan {% if pl.mis_en_avant and forloop.counter == 2 %}vedette{% endif %}" style="padding:1.3rem">
+      <h3 class="fs-4 mb-1">{{ pl.nom }}</h3>
+      <div class="montant" style="font-size:1.8rem">{{ pl.prix_fcfa|fcfa }}</div>
+      <p class="text-muted small mb-0">pour {{ pl.duree_jours }} jours</p>
+      <ul>{% for a in pl.avantages_liste|slice:":3" %}<li class="small">{{ a }}</li>{% endfor %}</ul>
+      {% if abo_attente %}<button class="btn btn-fs" disabled>Paiement en cours</button>
+      {% else %}<a class="btn btn-fs" href="{% url 'espace_souscrire' pl.id %}">Choisir</a>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<h2 class="fs-3 mb-3">Historique</h2>
+<div class="panneau table-responsive">
+  <table class="table table-sm align-middle mb-0">
+    <thead><tr><th>Date</th><th>Formule</th><th>Montant</th><th>Statut</th><th>Fin</th></tr></thead>
+    <tbody>
+    {% for a in historique %}
+      <tr><td>{{ a.cree_le|date:"d/m/Y" }}</td><td>{{ a.plan.nom }}</td><td>{{ a.montant|fcfa }}</td><td>{{ a.get_statut_display }}</td><td>{{ a.fin|date:"d/m/Y"|default:"—" }}</td></tr>
+    {% empty %}<tr><td colspan="5" class="text-muted">Aucun paiement pour le moment.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

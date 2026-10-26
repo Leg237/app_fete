@@ -1,0 +1,31 @@
+{% extends "espace/base_espace.html" %}
+{% block espace %}
+<h1 class="fs-2 mb-3">Demandes de devis</h1>
+{% for d in demandes %}
+  <div class="panneau mb-3">
+    <div class="d-flex justify-content-between flex-wrap gap-2">
+      <div>
+        <b class="fs-5">{{ d.nom_contact }}</b>
+        <span class="pastille {% if d.statut == 'traitee' %}pastille-ok{% elif d.statut == 'nouvelle' %}pastille-att{% endif %}">{{ d.get_statut_display }}</span>
+        <div class="text-muted small">Reçue le {{ d.cree_le|date:"d/m/Y" }}</div>
+      </div>
+      {% if d.lien_whatsapp %}<a class="btn btn-wa btn-sm align-self-start" target="_blank" rel="noopener" href="{{ d.lien_whatsapp }}">Répondre sur WhatsApp</a>{% endif %}
+    </div>
+    <dl class="details mt-3 mb-2">
+      <dt>Type de fête</dt><dd>{{ d.type_fete }}</dd>
+      {% if d.date_evenement %}<dt>Date</dt><dd>{{ d.date_evenement|date:"d/m/Y" }}</dd>{% endif %}
+      {% if d.budget %}<dt>Budget</dt><dd>{{ d.budget }}</dd>{% endif %}
+      <dt>Téléphone</dt><dd>{{ d.telephone }}</dd>
+    </dl>
+    {% if d.message %}<p class="mb-2">{{ d.message }}</p>{% endif %}
+    {% if d.statut != 'traitee' %}
+    <form method="post" action="{% url 'espace_demande_statut' d.pk %}" class="d-flex gap-2">{% csrf_token %}
+      {% if d.statut == 'nouvelle' %}<button class="btn btn-fs-ligne btn-sm" name="statut" value="lue" type="submit">Marquer comme lue</button>{% endif %}
+      <button class="btn btn-fs btn-sm" name="statut" value="traitee" type="submit">Marquer comme traitée</button>
+    </form>
+    {% endif %}
+  </div>
+{% empty %}
+  <div class="panneau text-center py-5"><p class="serif fs-4 mb-1">Pas encore de demande.</p><p class="text-muted mb-0">Elles arrivent ici dès qu'un client vous écrit depuis votre page.</p></div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titre %}Vérifiez votre boîte e-mail — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container" style="max-width:560px">
+    <div class="panneau text-center py-5">
+      <p style="font-size:3rem" class="mb-2" aria-hidden="true">✉️</p>
+      <h1 class="fs-2">Vérifiez votre boîte e-mail</h1>
+      <p class="text-muted">Si un compte existe avec cette adresse, un e-mail contenant un lien de réinitialisation vient d'être envoyé. Le lien est valable 24 heures.</p>
+      <p class="text-muted small mb-4">Rien reçu ? Regardez dans les courriers indésirables, ou attendez une minute avant de refaire une demande.</p>
+      <a class="btn btn-fs" href="{% url 'connexion' %}">Retour à la connexion</a>
+      <a class="btn btn-link" href="{% url 'mdp_oublie' %}">Refaire une demande</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

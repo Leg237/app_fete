@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block titre %}Créer un compte — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container">
+    <h1 class="titre-section">Créer mon compte</h1>
+    <p class="sous-titre">Choisissez votre profil. L'inscription est gratuite pour les clients ; les prestataires choisissent ensuite une formule.</p>
+
+    <a class="cat mt-4" style="--c:#1e88e5;max-width:520px" href="{% url 'inscription_visiteur' %}">
+      <span class="cat-emoji" aria-hidden="true">🎉</span>
+      <span><b>Je cherche un prestataire</b><small>Compte client gratuit : demandes de devis et avis</small></span>
+    </a>
+
+    <h2 class="fs-3 mt-5 mb-3">Je suis prestataire</h2>
+    <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3">
+      {% for c in categories %}
+      <div class="col">
+        <a class="cat" style="--c: {{ c.couleur }}" href="{% url 'inscription_prestataire' c.slug %}">
+          <span class="cat-emoji" aria-hidden="true">{{ c.emoji }}</span>
+          <span><b>{{ c.nom }}</b><small>{{ c.description }}</small></span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

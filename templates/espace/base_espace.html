@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block titre %}Mon espace — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-3">
+      <div class="mb-3">
+        <p class="serif fs-5 mb-1">{{ p.nom }}</p>
+        <span class="pastille {% if p.statut == 'valide' %}pastille-ok{% elif p.statut == 'attente' %}pastille-att{% else %}pastille-ko{% endif %}">{{ p.get_statut_display }}</span>
+      </div>
+      <nav class="espace-nav" aria-label="Mon espace">
+        <a href="{% url 'espace' %}" class="{% if onglet == 'tableau' %}actif{% endif %}">Tableau de bord</a>
+        <a href="{% url 'espace_profil' %}" class="{% if onglet == 'profil' %}actif{% endif %}">Mon profil</a>
+        <a href="{% url 'espace_offres' %}" class="{% if onglet == 'offres' %}actif{% endif %}">Mes offres</a>
+        <a href="{% url 'espace_galerie' %}" class="{% if onglet == 'galerie' %}actif{% endif %}">Ma galerie</a>
+        <a href="{% url 'espace_abonnement' %}" class="{% if onglet == 'abonnement' %}actif{% endif %}">Mon abonnement</a>
+        <a href="{% url 'espace_demandes' %}" class="{% if onglet == 'demandes' %}actif{% endif %}">Demandes de devis</a>
+        <a href="{{ p.get_absolute_url }}">Voir ma page publique</a>
+      </nav>
+    </div>
+    <div class="col-lg-9">{% block espace %}{% endblock %}</div>
+  </div>
+</div>
+{% endblock %}

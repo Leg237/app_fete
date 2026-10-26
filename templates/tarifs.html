@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load fete %}
+{% block titre %}Formules prestataires — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container">
+    <h1 class="titre-section">Une vitrine à votre image, gérée par vous</h1>
+    <p class="sous-titre">Chaque prestataire dispose de son espace : profil, photos, offres avec prix et demandes de devis. Le compte client reste gratuit.</p>
+
+    <div class="row g-4 mt-2">
+      {% for pl in plans %}
+      <div class="col-md-6 col-lg-4">
+        <div class="plan {% if pl.mis_en_avant and forloop.counter == 2 %}vedette{% endif %}">
+          <h2 class="fs-3 mb-1">{{ pl.nom }}</h2>
+          <p class="text-muted mb-3">{{ pl.description }}</p>
+          <div class="montant">{{ pl.prix_fcfa|fcfa }}</div>
+          <p class="text-muted mt-1 mb-0">pour {{ pl.duree_jours }} jours</p>
+          <ul>{% for a in pl.avantages_liste %}<li>{{ a }}</li>{% endfor %}</ul>
+          {% if user.is_authenticated and user.prestataire %}
+            <a class="btn btn-fs" href="{% url 'espace_souscrire' pl.id %}">Choisir cette formule</a>
+          {% else %}
+            <a class="btn btn-fs" href="{% url 'inscription' %}">Créer mon espace prestataire</a>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12"><div class="panneau">Les formules seront bientôt disponibles.</div></div>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4 mt-4">
+      <div class="col-lg-6"><div class="panneau h-100">
+        <h2 class="fs-4">Comment payer</h2>
+        <p class="mb-2">Le paiement se fait par Mobile Money. Après avoir choisi une formule, envoyez le montant puis saisissez la référence de la transaction : l'équipe active votre abonnement après vérification.</p>
+        {% if site.numero_mtn_momo %}<p class="mb-1"><b>MTN MoMo :</b> {{ site.numero_mtn_momo }}</p>{% endif %}
+        {% if site.numero_orange_money %}<p class="mb-1"><b>Orange Money :</b> {{ site.numero_orange_money }}</p>{% endif %}
+        {% if site.beneficiaire_paiement %}<p class="mb-0 text-muted">Au nom de {{ site.beneficiaire_paiement }}</p>{% endif %}
+      </div></div>
+      <div class="col-lg-6"><div class="panneau h-100">
+        <h2 class="fs-4">Quand mon profil est-il visible ?</h2>
+        <p class="mb-0">Votre vitrine est publiée pour les clients dès que deux conditions sont réunies : votre profil est validé par notre équipe et votre abonnement est actif. Vous pouvez préparer vos photos et vos offres avant.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

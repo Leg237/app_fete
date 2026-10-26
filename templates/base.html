@@ -1,0 +1,105 @@
+{% load static %}<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titre %}{{ site.nom_site }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ site.slogan }}{% endblock %}">
+  <meta name="theme-color" content="#2a1840">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg fs-nav" data-bs-theme="dark">
+  <div class="container">
+    <a class="navbar-brand marque" href="{% url 'accueil' %}"><span class="marque-arche" aria-hidden="true"></span>{{ site.nom_site }}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Ouvrir le menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="menu">
+      {% url 'prestataires' as url_presta %}{% url 'tarifs' as url_tarifs %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+        <li class="nav-item"><a class="nav-link {% if request.path == url_presta %}actif{% endif %}" href="{{ url_presta }}">Trouver un prestataire</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.path == url_tarifs %}actif{% endif %}" href="{{ url_tarifs }}">Espace prestataire et tarifs</a></li>
+      </ul>
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        {% if user.is_authenticated %}
+          {% if user.prestataire %}
+            <a class="btn btn-fs-or btn-sm" href="{% url 'espace' %}">Mon espace</a>
+          {% else %}
+            <a class="btn btn-fs-or btn-sm" href="{% url 'compte' %}">Mon compte</a>
+          {% endif %}
+          <form method="post" action="{% url 'deconnexion' %}" class="m-0">{% csrf_token %}
+            <button class="btn btn-link btn-sm text-white-50 text-decoration-none" type="submit">Se déconnecter</button>
+          </form>
+        {% else %}
+          <a class="btn btn-link btn-sm text-white text-decoration-none" href="{% url 'connexion' %}">Connexion</a>
+          <a class="btn btn-fs btn-sm" href="{% url 'inscription' %}">Créer un compte</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+{% if messages %}
+<div class="container mt-3">
+  {% for m in messages %}
+    <div class="alert alert-{{ m.level_tag }} alert-dismissible fade show" role="alert">{{ m }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main>{% block contenu %}{% endblock %}</main>
+
+<footer class="pied">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <p class="marque mb-2"><span class="marque-arche" aria-hidden="true"></span>{{ site.nom_site }}</p>
+        <p>{{ site.slogan }}. Les clients s'inscrivent gratuitement ; les prestataires publient leur vitrine avec un abonnement.</p>
+      </div>
+      <div class="col-6 col-lg-3">
+        <h4>Services</h4>
+        <ul>{% for c in categories_menu|slice:":6" %}<li><a href="{% url 'prestataires' %}?categorie={{ c.slug }}">{{ c.nom }}</a></li>{% endfor %}</ul>
+      </div>
+      <div class="col-6 col-lg-4">
+        <h4>Contact</h4>
+        <ul>
+          {% if site.email_contact %}<li><a href="mailto:{{ site.email_contact }}">{{ site.email_contact }}</a></li>{% endif %}
+          {% if site.whatsapp_lien %}<li><a href="{{ site.whatsapp_lien }}" target="_blank" rel="noopener">Écrire sur WhatsApp</a></li>{% endif %}
+          <li><a href="{% url 'tarifs' %}">Devenir prestataire</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pied-legal">
+      <span>© {% now "Y" %} {{ site.nom_site }}</span>
+      <a href="{% url 'cgu' %}">Conditions d'utilisation</a>
+      <a href="{% url 'confidentialite' %}">Confidentialité</a>
+      <a href="{% url 'mentions_legales' %}">Mentions légales</a>
+      <a href="{% url 'cookies' %}">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<div class="modal fade" id="visionneuse" tabindex="-1" aria-label="Image agrandie" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0 align-items-center">
+      <img class="img-fluid rounded-4" src="" alt="">
+      <button type="button" class="btn btn-fs-or mt-3" data-bs-dismiss="modal">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<div id="bandeau-cookies" class="bandeau-cookies" role="region" aria-label="Information sur les cookies" hidden>
+  <p class="mb-0">Ce site n'utilise que des cookies indispensables (connexion et sécurité), sans publicité ni suivi. <a href="{% url 'cookies' %}">En savoir plus</a></p>
+  <button type="button" class="btn btn-fs-or btn-sm" id="cookies-ok">J'ai compris</button>
+</div>
+
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

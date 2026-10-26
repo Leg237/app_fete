@@ -1,0 +1,11 @@
+{% extends "erreur.html" %}
+{% block titre %}Session expirée — {{ site.nom_site }}{% endblock %}
+{% block emoji %}⏳{% endblock %}
+{% block code %}403{% endblock %}
+{% block h1 %}Votre session a expiré.{% endblock %}
+{% block message %}Par sécurité, le formulaire n'a pas été envoyé : la page est restée ouverte trop longtemps, ou les cookies sont bloqués dans votre navigateur. Revenez en arrière, rechargez la page et recommencez.{% endblock %}
+{% block actions %}
+  <a class="btn btn-fs" href="javascript:history.back()">Revenir à la page précédente</a>
+  <a class="btn btn-fs-ligne" href="{% url 'accueil' %}">Retour à l'accueil</a>
+{% endblock %}
+{% block extra %}<p class="small text-muted mt-4 mb-0">Vos informations ne sont pas perdues côté serveur : rien n'a été enregistré. Vérifiez que les cookies sont autorisés (<a href="{% url 'cookies' %}">en savoir plus</a>).</p>{% endblock %}

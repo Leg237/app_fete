@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block titre %}Mon compte — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container">
+    <h1 class="titre-section">Bonjour {{ user.first_name|default:"et bienvenue" }}</h1>
+    <p class="sous-titre">Votre compte client est gratuit. Retrouvez ici vos demandes de devis et vos avis.</p>
+    <a class="btn btn-fs mt-2" href="{% url 'prestataires' %}">Trouver un prestataire</a>
+
+    <div class="row g-4 mt-3">
+      <div class="col-lg-7">
+        <div class="panneau">
+          <h2 class="fs-4">Mes demandes de devis</h2>
+          {% for d in demandes %}
+            <div class="avis-item">
+              <a href="{{ d.prestataire.get_absolute_url }}"><b>{{ d.prestataire.nom }}</b></a>
+              <span class="pastille {% if d.statut == 'traitee' %}pastille-ok{% elif d.statut == 'nouvelle' %}pastille-att{% endif %}">{{ d.get_statut_display }}</span>
+              <div class="text-muted small">{{ d.type_fete }}{% if d.date_evenement %}, le {{ d.date_evenement|date:"d/m/Y" }}{% endif %}{% if d.budget %}, budget {{ d.budget }}{% endif %}</div>
+            </div>
+          {% empty %}
+            <p class="text-muted mb-0">Vous n'avez pas encore envoyé de demande.</p>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="panneau">
+          <h2 class="fs-4">Mes avis</h2>
+          {% for a in avis %}
+            <div class="avis-item"><a href="{{ a.prestataire.get_absolute_url }}"><b>{{ a.prestataire.nom }}</b></a> {{ a.note }}/5
+              {% if a.commentaire %}<div class="text-muted small">{{ a.commentaire }}</div>{% endif %}</div>
+          {% empty %}<p class="text-muted mb-0">Vous n'avez pas encore donné d'avis.</p>{% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

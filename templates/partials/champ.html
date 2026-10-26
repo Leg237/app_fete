@@ -1,0 +1,14 @@
+{% if f.field.widget.input_type == "checkbox" %}
+<div class="form-check mb-3">
+  {{ f }}
+  <label class="form-check-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
+  {% for e in f.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+</div>
+{% else %}
+<div class="mb-3">
+  <label class="form-label" for="{{ f.id_for_label }}">{{ f.label }}{% if not f.field.required %} <span class="text-muted fw-normal">(facultatif)</span>{% endif %}</label>
+  {{ f }}
+  {% if f.help_text %}<div class="form-text">{{ f.help_text|safe }}</div>{% endif %}
+  {% for e in f.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+</div>
+{% endif %}

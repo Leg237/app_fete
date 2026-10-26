@@ -1,0 +1,32 @@
+{% load static %}<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Un souci de notre côté — Fête &amp; Services</title>
+  <meta name="theme-color" content="#2a1840">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+</head>
+<body>
+<!-- Page autonome : aucune donnée du site n'est lue, elle reste affichable même si la base de données est indisponible. -->
+<nav class="fs-nav"><div class="container"><a class="marque" href="/"><span class="marque-arche" aria-hidden="true"></span>Fête &amp; Services</a></div></nav>
+<section class="erreur">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-md-5">
+        <div class="erreur-arche" aria-hidden="true"><span class="erreur-emoji">🛠️</span><span class="erreur-code">500</span></div>
+      </div>
+      <div class="col-md-7">
+        <h1 class="erreur-titre">Un souci de notre côté.</h1>
+        <p class="lead text-muted" style="max-width:48ch">Le site a rencontré un problème inattendu. Notre équipe en est informée. Patientez une minute puis réessayez ; vos données n'ont pas été modifiées.</p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a class="btn btn-fs" href="javascript:location.reload()">Réessayer</a>
+          <a class="btn btn-fs-ligne" href="/">Retour à l'accueil</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

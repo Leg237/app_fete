@@ -1,0 +1,31 @@
+{% extends "legal/base_legal.html" %}
+{% block titre %}Cookies — {{ site.nom_site }}{% endblock %}
+{% block titre_page %}Politique relative aux cookies{% endblock %}
+{% block texte %}
+<p>Un cookie est un petit fichier enregistré sur votre appareil par le site que vous visitez. {{ site.nom_site }} n'utilise que des cookies <b>indispensables</b> à son fonctionnement. Il n'y a ni cookie publicitaire, ni outil de mesure d'audience, ni script de suivi tiers.</p>
+
+<h2>Les cookies que nous utilisons</h2>
+<div class="table-responsive"><table class="table table-sm align-middle">
+  <thead><tr><th>Nom</th><th>À quoi il sert</th><th>Durée</th></tr></thead>
+  <tbody>
+    <tr><td><code>sessionid</code></td><td>Vous garder connecté à votre compte pendant la navigation.</td><td>2 semaines au maximum</td></tr>
+    <tr><td><code>csrftoken</code></td><td>Protéger les formulaires contre les envois frauduleux (sécurité).</td><td>1 an au maximum</td></tr>
+  </tbody>
+</table></div>
+<p>Votre navigateur conserve aussi une préférence, <code>fs_cookies_ok</code>, dans son stockage local : elle mémorise que vous avez fermé l'information sur les cookies, pour ne plus vous l'afficher.</p>
+
+<h2>Pourquoi aucun consentement n'est demandé</h2>
+<p>Ces cookies sont strictement nécessaires pour vous connecter et sécuriser le site ; ils ne servent à aucun autre usage. Si nous ajoutons un jour des cookies de mesure d'audience ou de publicité, nous vous demanderons d'abord votre accord.</p>
+
+<h2>Liens externes</h2>
+<p>Les boutons WhatsApp et les appels téléphoniques ouvrent une application ou un site extérieur. Ils sont soumis à leurs propres règles, que nous ne contrôlons pas.</p>
+
+<h2>Gérer ou supprimer les cookies</h2>
+<p>Vous pouvez supprimer les cookies ou bloquer leur enregistrement depuis les paramètres de votre navigateur. Sans les cookies indispensables, vous ne pourrez plus vous connecter ni envoyer de formulaire. Pour retrouver l'information sur les cookies, effacez les données du site dans votre navigateur.</p>
+
+<h2>Application mobile</h2>
+<p>L'application n'utilise pas de cookies de navigateur : elle garde sur votre téléphone un jeton de connexion, supprimé lorsque vous vous déconnectez.</p>
+
+<h2>Plus d'informations</h2>
+<p>Consultez la <a href="{% url 'confidentialite' %}">politique de confidentialité</a> pour savoir comment nous traitons vos données et exercer vos droits.</p>
+{% endblock %}

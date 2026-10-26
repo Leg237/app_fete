@@ -1,0 +1,17 @@
+{% autoescape off %}<!doctype html>
+<html lang="fr"><body style="margin:0;background:#fbf8fc;font-family:Georgia,'Times New Roman',serif;color:#241b2f">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fbf8fc;padding:24px 12px"><tr><td align="center">
+  <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border:1px solid #e6ddeb;border-radius:18px;overflow:hidden">
+    <tr><td style="background:#2a1840;padding:22px 28px;color:#ffffff;font-size:22px">{{ nom_site|default:site_name }}</td></tr>
+    <tr><td style="padding:28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6">
+      <p style="margin:0 0 14px">Bonjour{% if user.first_name %} {{ user.first_name }}{% endif %},</p>
+      <p style="margin:0 0 20px">Vous avez demandé à réinitialiser le mot de passe de votre compte. Ce lien est valable 24 heures.</p>
+      <p style="margin:0 0 24px"><a href="{{ protocol }}://{{ domain }}{% url 'mdp_confirmer' uidb64=uid token=token %}" style="background:#c23b66;color:#ffffff;text-decoration:none;padding:13px 26px;border-radius:999px;font-weight:bold;display:inline-block">Choisir un nouveau mot de passe</a></p>
+      <p style="margin:0 0 6px;color:#6f6580;font-size:13px">Le bouton ne fonctionne pas ? Copiez cette adresse dans votre navigateur :</p>
+      <p style="margin:0 0 20px;font-size:13px;word-break:break-all;color:#a32d54">{{ protocol }}://{{ domain }}{% url 'mdp_confirmer' uidb64=uid token=token %}</p>
+      <p style="margin:0;color:#6f6580;font-size:13px">Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail : votre mot de passe actuel reste inchangé.</p>
+    </td></tr>
+  </table>
+</td></tr></table>
+</body></html>
+{% endautoescape %}

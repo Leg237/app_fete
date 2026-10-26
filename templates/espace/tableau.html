@@ -1,0 +1,45 @@
+{% extends "espace/base_espace.html" %}
+{% block espace %}
+<h1 class="fs-2 mb-3">Tableau de bord</h1>
+
+{% if p.statut == 'refuse' %}
+  <div class="alert alert-danger">Votre profil a été refusé{% if p.motif_refus %} : {{ p.motif_refus }}{% endif %}. Corrigez-le dans <a href="{% url 'espace_profil' %}">Mon profil</a> puis contactez l'équipe.</div>
+{% elif p.statut == 'suspendu' %}
+  <div class="alert alert-warning">Votre compte est suspendu. Contactez l'équipe pour le réactiver.</div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3"><div class="stat"><b>{{ nb_offres }}/{{ limites.1 }}</b>offres</div></div>
+  <div class="col-6 col-md-3"><div class="stat"><b>{{ nb_photos }}/{{ limites.0 }}</b>photos</div></div>
+  <div class="col-6 col-md-3"><div class="stat"><b>{{ nb_nouvelles }}</b>nouvelle{{ nb_nouvelles|pluralize }} demande{{ nb_nouvelles|pluralize }}</div></div>
+  <div class="col-6 col-md-3"><div class="stat"><b>{% if abo %}{{ abo.jours_restants }} j{% else %}—{% endif %}</b>d'abonnement restants</div></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="panneau h-100">
+      <h2 class="fs-4">Pour être visible des clients</h2>
+      <ul class="liste-verif mb-3">
+        <li class="{% if p.statut == 'valide' %}ok{% endif %}">Profil validé par l'équipe</li>
+        <li class="{% if abo %}ok{% endif %}">Abonnement actif</li>
+        <li class="{% if nb_offres %}ok{% endif %}">Au moins une offre avec photo</li>
+        <li class="{% if nb_photos %}ok{% endif %}">Au moins une photo dans la galerie</li>
+      </ul>
+      {% if not abo %}
+        {% if abo_attente %}<p class="text-muted mb-0">Votre paiement de {{ abo_attente.montant }} FCFA est en cours de vérification.</p>
+        {% else %}<a class="btn btn-fs" href="{% url 'espace_abonnement' %}">Choisir une formule</a>{% endif %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="panneau h-100">
+      <h2 class="fs-4">Dernières demandes</h2>
+      {% for d in dernieres %}
+        <div class="avis-item"><b>{{ d.nom_contact }}</b> <span class="pastille {% if d.statut == 'nouvelle' %}pastille-att{% endif %}">{{ d.get_statut_display }}</span>
+          <div class="text-muted small">{{ d.type_fete }}{% if d.date_evenement %}, le {{ d.date_evenement|date:"d/m/Y" }}{% endif %}</div></div>
+      {% empty %}<p class="text-muted mb-0">Aucune demande pour le moment.</p>{% endfor %}
+      {% if dernieres %}<a class="btn btn-fs-ligne btn-sm mt-3" href="{% url 'espace_demandes' %}">Toutes les demandes</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

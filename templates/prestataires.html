@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block titre %}Trouver un prestataire — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section pb-3">
+  <div class="container">
+    <h1 class="titre-section">Trouver un prestataire</h1>
+    <form method="get" class="row g-2 mt-3" role="search">
+      <div class="col-lg-5"><input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Traiteur, DJ, salle, couverts…" aria-label="Recherche"></div>
+      <div class="col-sm-6 col-lg-3">
+        <select class="form-select" name="categorie" aria-label="Service">
+          <option value="">Tous les services</option>
+          {% for c in categories %}<option value="{{ c.slug }}" {% if c.slug == categorie_active %}selected{% endif %}>{{ c.emoji }} {{ c.nom }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6 col-lg-2">
+        <select class="form-select" name="ville" aria-label="Ville">
+          <option value="">Toutes les villes</option>
+          {% for v in villes %}<option value="{{ v.id }}" {% if v.id|stringformat:"s" == ville_active %}selected{% endif %}>{{ v.nom }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-lg-2 d-grid"><button class="btn btn-fs" type="submit">Rechercher</button></div>
+    </form>
+  </div>
+</section>
+
+<section class="pb-5">
+  <div class="container">
+    <p class="text-muted">{{ page.paginator.count }} résultat{{ page.paginator.count|pluralize }}</p>
+    {% if page.object_list %}
+      <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
+        {% for p in page.object_list %}<div class="col">{% include "partials/carte_prestataire.html" %}</div>{% endfor %}
+      </div>
+      {% if page.paginator.num_pages > 1 %}
+      <nav class="d-flex justify-content-center gap-2 mt-5" aria-label="Pages">
+        {% if page.has_previous %}<a class="btn btn-fs-ligne btn-sm" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.previous_page_number }}">Page précédente</a>{% endif %}
+        <span class="align-self-center text-muted">Page {{ page.number }} sur {{ page.paginator.num_pages }}</span>
+        {% if page.has_next %}<a class="btn btn-fs-ligne btn-sm" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.next_page_number }}">Page suivante</a>{% endif %}
+      </nav>
+      {% endif %}
+    {% else %}
+      <div class="panneau text-center py-5">
+        <p class="serif fs-4 mb-1">Aucun prestataire ne correspond.</p>
+        <p class="text-muted mb-3">Essayez un autre service, une autre ville, ou retirez un filtre.</p>
+        <a class="btn btn-fs-ligne" href="{% url 'prestataires' %}">Effacer les filtres</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

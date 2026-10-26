@@ -1,0 +1,11 @@
+{% autoescape off %}Bonjour{% if user.first_name %} {{ user.first_name }}{% endif %},
+
+Vous avez demandé à réinitialiser le mot de passe de votre compte {{ nom_site|default:site_name }}.
+
+Cliquez sur ce lien (valable 24 heures) pour choisir un nouveau mot de passe :
+{{ protocol }}://{{ domain }}{% url 'mdp_confirmer' uidb64=uid token=token %}
+
+Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet e-mail : votre mot de passe actuel reste inchangé.
+
+L'équipe {{ nom_site|default:site_name }}
+{% endautoescape %}

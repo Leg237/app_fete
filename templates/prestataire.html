@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load fete %}
+{% block titre %}{{ p.nom }}, {{ p.categorie.nom }} à {{ p.ville.nom }} — {{ site.nom_site }}{% endblock %}
+{% block description %}{{ p.description|truncatechars:150 }}{% endblock %}
+{% block contenu %}
+<div class="container pt-4" style="--c: {{ p.categorie.couleur }}">
+  {% if not en_ligne %}
+    <div class="alert alert-warning">Cette page n'est pas encore publique{% if proprietaire %} : elle le sera quand votre profil sera validé et votre abonnement actif. <a href="{% url 'espace' %}">Aller à mon espace</a>{% else %} (aperçu administrateur){% endif %}.</div>
+  {% endif %}
+
+  <div class="couverture">
+    {% if p.couverture %}<img src="{{ p.couverture.url }}" alt="Couverture de {{ p.nom }}" data-zoom="{{ p.couverture.url }}">
+    {% else %}<span style="font-size:4rem" aria-hidden="true">{{ p.categorie.emoji }}</span>{% endif %}
+  </div>
+  <div class="fiche-entete">
+    {% if p.logo %}<img class="fiche-logo" src="{{ p.logo.url }}" alt="Logo de {{ p.nom }}">{% else %}<span class="fiche-logo" aria-hidden="true">{{ p.categorie.emoji }}</span>{% endif %}
+    <div class="pb-1">
+      <h1 class="mb-1" style="font-size:clamp(1.6rem,4vw,2.3rem)">{{ p.nom }}</h1>
+      <span class="pastille" style="--c: {{ p.categorie.couleur }}">{{ p.categorie.nom }}</span>
+      <span class="text-muted ms-1">{{ p.ville.nom }}{% if p.adresse %}, {{ p.adresse }}{% endif %}</span>
+      <div class="mt-1">
+        {% if nb_avis %}<span class="etoiles">{{ note_moyenne|etoiles }}</span> {{ note_moyenne|floatformat:1 }} sur 5 ({{ nb_avis }} avis){% else %}<span class="text-muted">Pas encore d'avis</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 pb-5">
+    <div class="col-lg-8">
+      {% if p.description %}<section class="mb-5"><h2 class="fs-3">Présentation</h2><p style="max-width:70ch;white-space:pre-line">{{ p.description }}</p></section>{% endif %}
+
+      {% if details %}
+      <section class="mb-5"><h2 class="fs-3">Informations pratiques</h2>
+        <dl class="details">{% for k, v in details %}<dt>{{ k }}</dt><dd>{{ v }}</dd>{% endfor %}</dl>
+      </section>
+      {% endif %}
+
+      {% if offres %}
+      <section class="mb-5"><h2 class="fs-3 mb-3">Offres et tarifs</h2>
+        <div class="row g-3 row-cols-1 row-cols-sm-2">
+          {% for o in offres %}
+          <div class="col"><div class="offre" style="--c: {{ p.categorie.couleur }}">
+            {% if o.image %}<img src="{{ o.image.url }}" alt="{{ o.titre }}" loading="lazy" data-zoom="{{ o.image.url }}">{% else %}<div class="offre-vide" aria-hidden="true">{{ p.categorie.emoji }}</div>{% endif %}
+            <div class="offre-corps">
+              <h3 class="fs-5 mb-1">{{ o.titre }}</h3>
+              <div class="prix">{{ o.prix|fcfa }}{% if o.prix and o.unite_prix %} <span class="text-muted fw-normal fs-6">{{ o.unite_prix }}</span>{% endif %}</div>
+              {% if o.description %}<p class="mb-0 mt-2 text-muted small">{{ o.description|truncatechars:140 }}</p>{% endif %}
+            </div>
+          </div></div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if photos %}
+      <section class="mb-5"><h2 class="fs-3 mb-3">Réalisations</h2>
+        <div class="galerie">{% for ph in photos %}<img src="{{ ph.image.url }}" alt="{{ ph.legende|default:p.nom }}" loading="lazy" data-zoom="{{ ph.image.url }}">{% endfor %}</div>
+      </section>
+      {% endif %}
+
+      <section id="avis" class="mb-4"><h2 class="fs-3 mb-3">Avis des clients</h2>
+        {% for a in avis_liste %}
+          <div class="avis-item"><span class="etoiles">{{ a.note|etoiles }}</span> <b>{{ a.auteur.first_name|default:"Client" }}</b>
+            <span class="text-muted small">le {{ a.cree_le|date:"d/m/Y" }}</span>
+            {% if a.commentaire %}<p class="mb-0 mt-1">{{ a.commentaire }}</p>{% endif %}</div>
+        {% empty %}<p class="text-muted">Aucun avis pour le moment.</p>{% endfor %}
+
+        {% if user.is_authenticated and not proprietaire and en_ligne %}
+          <form class="panneau mt-3" method="post" action="{% url 'avis' p.slug %}">{% csrf_token %}
+            <p class="form-label mb-1">{% if mon_avis %}Modifier votre avis{% else %}Donnez votre avis{% endif %}</p>
+            <div class="note-radios mb-2">
+              {% for v in "54321" %}<input type="radio" name="note" id="note{{ v }}" value="{{ v }}" {% if mon_avis and mon_avis.note|stringformat:"s" == v %}checked{% endif %} required><label for="note{{ v }}" title="{{ v }} sur 5">★</label>{% endfor %}
+            </div>
+            <textarea class="form-control mb-2" name="commentaire" rows="3" placeholder="Racontez votre expérience">{{ mon_avis.commentaire }}</textarea>
+            <button class="btn btn-fs-ligne btn-sm" type="submit">Publier mon avis</button>
+          </form>
+        {% endif %}
+      </section>
+    </div>
+
+    <aside class="col-lg-4" id="contact">
+      <div class="collant">
+        <div class="contact-carte mb-3">
+          <h2 class="fs-4">Contacter {{ p.nom }}</h2>
+          <div class="d-grid gap-2 mt-3">
+            {% if p.lien_whatsapp %}<a class="btn btn-wa" target="_blank" rel="noopener" href="{{ p.lien_whatsapp }}?text={{ 'Bonjour, je vous contacte depuis Fête & Services.'|urlencode }}">Écrire sur WhatsApp</a>{% endif %}
+            <a class="btn btn-fs-ligne" href="tel:{{ p.telephone }}">Appeler le {{ p.telephone }}</a>
+          </div>
+        </div>
+
+        {% if en_ligne and not proprietaire %}
+        <div class="contact-carte">
+          <h2 class="fs-4">Demander un devis</h2>
+          {% if user.is_authenticated %}
+            <form method="post" action="{% url 'demande' p.slug %}" class="mt-3">{% csrf_token %}
+              {% for f in form_demande %}{% include "partials/champ.html" %}{% endfor %}
+              <button class="btn btn-fs w-100" type="submit">Envoyer ma demande</button>
+            </form>
+          {% else %}
+            <p class="text-muted mt-2">Créez un compte gratuit pour envoyer une demande de devis et laisser un avis.</p>
+            <div class="d-grid gap-2">
+              <a class="btn btn-fs" href="{% url 'inscription_visiteur' %}">Créer mon compte gratuit</a>
+              <a class="btn btn-fs-ligne" href="{% url 'connexion' %}?next={{ p.get_absolute_url }}">J'ai déjà un compte</a>
+            </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

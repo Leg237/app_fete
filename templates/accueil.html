@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load fete %}
+{% block contenu %}
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <h1>Votre fête mérite les meilleurs prestataires.</h1>
+        <p class="lead mt-3">Traiteurs, DJ, salles, pâtisseries, location de couverts. Regardez les photos, comparez les offres et écrivez directement sur WhatsApp.</p>
+        <form class="recherche-hero mt-4" action="{% url 'prestataires' %}" method="get" role="search">
+          <input class="form-control" type="search" name="q" placeholder="Traiteur, DJ, salle, couverts…" aria-label="Que cherchez-vous ?">
+          <select class="form-select" name="ville" aria-label="Ville">
+            <option value="">Toutes les villes</option>
+            {% for v in villes %}<option value="{{ v.id }}">{{ v.nom }}</option>{% endfor %}
+          </select>
+          <button class="btn btn-fs" type="submit">Rechercher</button>
+        </form>
+        <p class="petit mt-3 mb-0">Inscription gratuite pour les clients{% if nb_prestataires %}. {{ nb_prestataires }} prestataire{{ nb_prestataires|pluralize }} en ligne{% endif %}.</p>
+      </div>
+      <div class="col-lg-6">
+        <div class="arches">
+          {% for p in arches %}
+            <a class="arche" style="--c: {{ p.categorie.couleur }}" href="{% url 'prestataire' p.slug %}">
+              <img src="{{ p.image_principale.url }}" alt="{{ p.nom }}">
+              <span class="legende">{{ p.nom }}</span>
+            </a>
+          {% empty %}
+            {% for c in categories|slice:":3" %}
+              <a class="arche" style="--c: {{ c.couleur }}" href="{% url 'prestataires' %}?categorie={{ c.slug }}">
+                <span class="emoji" aria-hidden="true">{{ c.emoji }}</span>
+                <span class="legende">{{ c.nom }}</span>
+              </a>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="titre-section">Tous les services pour votre événement</h2>
+    <p class="sous-titre mb-4">Choisissez un domaine pour voir les prestataires de votre ville.</p>
+    <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-3">
+      {% for c in categories %}
+        <div class="col">
+          <a class="cat" style="--c: {{ c.couleur }}" href="{% url 'prestataires' %}?categorie={{ c.slug }}">
+            <span class="cat-emoji" aria-hidden="true">{{ c.emoji }}</span>
+            <span><b>{{ c.nom }}</b><small>{{ c.description }}</small></span>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section pt-0">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
+      <div>
+        <h2 class="titre-section">Prestataires à découvrir</h2>
+        <p class="sous-titre mb-0">Profils vérifiés par notre équipe, avec photos et tarifs.</p>
+      </div>
+      <a class="btn btn-fs-ligne" href="{% url 'prestataires' %}">Voir tous les prestataires</a>
+    </div>
+    {% if vedettes %}
+      <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
+        {% for p in vedettes %}<div class="col">{% include "partials/carte_prestataire.html" %}</div>{% endfor %}
+      </div>
+    {% else %}
+      <div class="panneau text-center py-5">
+        <p class="serif fs-4 mb-1">Les premiers prestataires arrivent.</p>
+        <p class="text-muted mb-3">Vous organisez des fêtes ou vous proposez un service ? Soyez parmi les premiers visibles.</p>
+        <a class="btn btn-fs" href="{% url 'tarifs' %}">Découvrir les formules</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section" style="background:#fff">
+  <div class="container">
+    <h2 class="titre-section mb-4">Comment ça marche</h2>
+    <div class="row g-4">
+      <div class="col-md-4"><div class="etape"><span class="etape-num">1</span><div><h3 class="fs-5">Cherchez</h3><p class="mb-0 text-muted">Filtrez par service et par ville. Les photos des réalisations et des produits sont visibles dès la liste.</p></div></div></div>
+      <div class="col-md-4"><div class="etape"><span class="etape-num">2</span><div><h3 class="fs-5">Comparez</h3><p class="mb-0 text-muted">Lisez les avis, regardez les offres avec leurs prix et choisissez celui qui vous convient.</p></div></div></div>
+      <div class="col-md-4"><div class="etape"><span class="etape-num">3</span><div><h3 class="fs-5">Contactez</h3><p class="mb-0 text-muted">Envoyez une demande de devis ou écrivez directement sur WhatsApp. Le compte client est gratuit.</p></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-sombre">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-8">
+        <h2 class="titre-section">Vous êtes prestataire ?</h2>
+        <p class="mb-0" style="color:rgba(255,255,255,.82);max-width:60ch">Créez votre vitrine, publiez vos photos et vos tarifs, et recevez des demandes de devis. Chaque prestataire gère son propre espace{% if plan_min %}, à partir de {{ plan_min.prix_fcfa|fcfa }}{% endif %}.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <a class="btn btn-fs-or btn-lg" href="{% url 'tarifs' %}">Voir les formules</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

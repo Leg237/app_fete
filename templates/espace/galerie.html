@@ -1,0 +1,25 @@
+{% extends "espace/base_espace.html" %}
+{% block espace %}
+<h1 class="fs-2 mb-1">Ma galerie</h1>
+<p class="text-muted">Montrez vos réalisations. {{ photos|length }} photo{{ photos|length|pluralize }} sur {{ limite }}.</p>
+
+{% if photos|length < limite %}
+<form method="post" enctype="multipart/form-data" class="panneau mb-4" novalidate>{% csrf_token %}
+  {% for f in form %}{% include "partials/champ.html" %}{% endfor %}
+  <button class="btn btn-fs" type="submit">Ajouter la photo</button>
+</form>
+{% else %}
+<div class="alert alert-warning">Limite de photos atteinte. <a href="{% url 'espace_abonnement' %}">Voir les formules</a>.</div>
+{% endif %}
+
+<div class="galerie">
+  {% for ph in photos %}
+    <div class="vignette-galerie">
+      <img src="{{ ph.image.url }}" alt="{{ ph.legende|default:'Photo' }}" data-zoom="{{ ph.image.url }}">
+      <form method="post" action="{% url 'espace_photo_suppr' ph.pk %}" onsubmit="return confirm('Supprimer cette photo ?')">{% csrf_token %}
+        <button class="btn btn-sm btn-light" type="submit" aria-label="Supprimer la photo">✕</button>
+      </form>
+    </div>
+  {% empty %}<p class="text-muted">Votre galerie est vide.</p>{% endfor %}
+</div>
+{% endblock %}

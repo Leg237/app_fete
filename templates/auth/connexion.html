@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titre %}Connexion — {{ site.nom_site }}{% endblock %}
+{% block contenu %}
+<section class="section">
+  <div class="container" style="max-width:480px">
+    <h1 class="titre-section">Connexion</h1>
+    <form method="post" class="panneau mt-3">{% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>{% endif %}
+      {% for f in form %}{% include "partials/champ.html" %}{% endfor %}
+      <button class="btn btn-fs w-100" type="submit">Me connecter</button>
+      <p class="text-center mt-3 mb-0"><a href="{% url 'mdp_oublie' %}">Mot de passe oublié ?</a></p>
+    </form>
+    <p class="text-center text-muted mt-3">Pas encore de compte ? <a href="{% url 'inscription' %}">Créer un compte</a></p>
+  </div>
+</section>
+{% endblock %}
