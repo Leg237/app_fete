@@ -4,14 +4,10 @@ from pathlib import Path
 
 from django.contrib.messages import constants as niveaux
 
-from dotenv import load_dotenv
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / ".env")
-
-SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
-DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-seulement-a-changer-en-production")
+DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 
 _hotes = os.environ.get("DJANGO_ALLOWED_HOSTS", "")
 ALLOWED_HOSTS = [h.strip() for h in _hotes.split(",") if h.strip()] or (["*"] if DEBUG else [])

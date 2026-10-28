@@ -7,6 +7,7 @@ from .models import (
     Avis,
     Categorie,
     Demande,
+    Notification,
     Offre,
     ParametresSite,
     Photo,
@@ -29,6 +30,9 @@ class ParametresSiteAdmin(admin.ModelAdmin):
             "description": "Ces informations sont affichées sur les pages légales. Complétez-les avant la mise en ligne.",
             "fields": ("raison_sociale", "forme_juridique", "adresse_siege", "ville_siege", "rccm", "niu", "directeur_publication",
                        "hebergeur_nom", "hebergeur_adresse", "hebergeur_pays")}),
+        ("Application mobile", {
+            "description": "Changer la version déclenche une notification « Mise à jour disponible » chez tous les utilisateurs.",
+            "fields": ("version_app_actuelle", "lien_telechargement_app")}),
         ("Paiement Mobile Money", {"fields": ("numero_mtn_momo", "numero_orange_money", "beneficiaire_paiement", "instructions_paiement")}),
     ]
 
@@ -89,17 +93,29 @@ class PrestataireAdmin(admin.ModelAdmin):
 
     @admin.action(description="Valider les prestataires sélectionnés")
     def valider(self, request, queryset):
-        n = queryset.update(statut=Prestataire.VALIDE, motif_refus="")
+        n = 0
+        for p in queryset:  # save() et non update() : déclenche la notification au prestataire
+            p.statut, p.motif_refus = Prestataire.VALIDE, ""
+            p.save()
+            n += 1
         self.message_user(request, f"{n} prestataire(s) validé(s).", messages.SUCCESS)
 
     @admin.action(description="Refuser les prestataires sélectionnés")
     def refuser(self, request, queryset):
-        n = queryset.update(statut=Prestataire.REFUSE)
+        n = 0
+        for p in queryset:
+            p.statut = Prestataire.REFUSE
+            p.save()
+            n += 1
         self.message_user(request, f"{n} prestataire(s) refusé(s). Précisez le motif dans la fiche.", messages.WARNING)
 
     @admin.action(description="Suspendre les prestataires sélectionnés")
     def suspendre(self, request, queryset):
-        n = queryset.update(statut=Prestataire.SUSPENDU)
+        n = 0
+        for p in queryset:
+            p.statut = Prestataire.SUSPENDU
+            p.save()
+            n += 1
         self.message_user(request, f"{n} prestataire(s) suspendu(s).", messages.WARNING)
 
 
@@ -120,7 +136,11 @@ class AbonnementAdmin(admin.ModelAdmin):
 
     @admin.action(description="Rejeter le paiement")
     def rejeter(self, request, queryset):
-        n = queryset.filter(statut=Abonnement.ATTENTE).update(statut=Abonnement.REJETE, valide_le=timezone.now())
+        n = 0
+        for abo in queryset.filter(statut=Abonnement.ATTENTE):
+            abo.statut, abo.valide_le = Abonnement.REJETE, timezone.now()
+            abo.save()
+            n += 1
         self.message_user(request, f"{n} paiement(s) rejeté(s).", messages.WARNING)
 
 
@@ -134,6 +154,16 @@ class AvisAdmin(admin.ModelAdmin):
 class DemandeAdmin(admin.ModelAdmin):
     list_display = ("prestataire", "type_fete", "nom_contact", "date_evenement", "statut", "cree_le")
     list_filter = ("statut",)
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    """Envoyez ici une annonce ou une promotion : elle arrive dans l'application de tous les utilisateurs."""
+
+    list_display = ("titre", "type", "destinataire", "cree_le")
+    list_filter = ("type",)
+    search_fields = ("titre", "message")
+    fields = ("type", "titre", "message", "route", "destinataire")
 
 
 admin.site.register(Profil)

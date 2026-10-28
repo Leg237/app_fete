@@ -4,6 +4,7 @@ from . import api
 
 urlpatterns = [
     path("meta/", api.meta),
+    path("notifications/", api.notifications),
     path("prestataires/", api.prestataires),
     path("prestataires/<slug:slug>/", api.prestataire_detail),
     path("prestataires/<slug:slug>/demande/", api.demande),

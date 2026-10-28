@@ -45,13 +45,13 @@ flet run main.py            # bureau
 flet build apk              # Android
 ```
 
-Adresse du serveur : modifiable dans l'app (icône réglages de l'accueil) ou via `FETE_API_URL`.
+Adresse du serveur : modifiable dans l'app (**Paramètres > Serveur**) ou via `FETE_API_URL`.
 Émulateur Android : `http://10.0.2.2:8000` — téléphone réel : l'IP du PC (`http://192.168.x.x:8000`) ou votre domaine HTTPS.
 Android bloque le HTTP en clair sur les versions récentes : utilisez HTTPS en production.
 
 ## 5. API (préfixe `/api/v1/`, en-tête `Authorization: Token <clé>`)
 
-`meta/` · `prestataires/?q=&categorie=&ville=&page=` · `prestataires/<slug>/` · `prestataires/<slug>/demande/` · `prestataires/<slug>/avis/` · `auth/inscription/` · `auth/connexion/` · `auth/deconnexion/` · `me/` · `me/demandes/` · `espace/` · `espace/profil/` · `espace/offres/` · `espace/offres/<id>/` · `espace/photos/` · `espace/photos/<id>/` · `espace/abonnement/` · `espace/demandes/` · `espace/demandes/<id>/statut/`
+`meta/` · `notifications/?apres=<id>` · `prestataires/?q=&categorie=&ville=&page=` · `prestataires/<slug>/` · `prestataires/<slug>/demande/` · `prestataires/<slug>/avis/` · `auth/inscription/` · `auth/connexion/` · `auth/deconnexion/` · `me/` · `me/demandes/` · `espace/` · `espace/profil/` · `espace/offres/` · `espace/offres/<id>/` · `espace/photos/` · `espace/photos/<id>/` · `espace/abonnement/` · `espace/demandes/` · `espace/demandes/<id>/statut/`
 
 ## 6. Pages d'erreur, pages légales, mot de passe oublié
 
@@ -62,6 +62,49 @@ Android bloque le HTTP en clair sur les versions récentes : utilisez HTTPS en p
 **Mot de passe oublié** : `/mot-de-passe-oublie/` envoie un lien valable 24 h (page « vérifiez votre e-mail », page de nouveau mot de passe, page de confirmation, lien expiré géré). La réponse est identique que l'adresse existe ou non, avec une demande par minute et par adresse. L'application propose le même service (« Mot de passe oublié ? » sur l'écran de connexion) : elle demande l'e-mail à l'API, l'utilisateur ouvre le lien reçu dans son navigateur.
 
 E-mails : en développement ils s'affichent dans la console du serveur. En production, définissez `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` et `DEFAULT_FROM_EMAIL` (par exemple un compte SMTP Gmail avec mot de passe d'application, Brevo ou Mailjet). Sans SMTP, la page affiche un message d'erreur clair au lieu de planter.
+
+## 6 bis. Paramètres, notifications, arrière-plan, icône et écran de démarrage (application)
+
+**Mise à jour du serveur** : de nouveaux champs et un nouveau modèle (`Notification`) ont été ajoutés. Lancez
+`python manage.py makemigrations core && python manage.py migrate`, puis redémarrez.
+
+**Écran Paramètres** (icône engrenage de l'accueil, ou onglet Compte) : compte, notifications (interrupteur général, par type, fréquence de
+vérification 5 / 15 / 30 / 60 min, « Vérifier maintenant », notification de test), autorisations et arrière-plan, adresse du serveur,
+effacement des données de l'appareil, version et recherche de mise à jour, liens légaux.
+
+**Notifications créées automatiquement par le serveur** (`core/signals.py`) :
+
+| Événement | Qui est notifié |
+|---|---|
+| Nouvelle offre, changement de prix ou d'offre d'un prestataire visible | tous (type « offre ») |
+| Nouveau prestataire visible, mise à jour de profil, nouvelles photos | tous (type « prestataire ») |
+| Demande de devis reçue, nouvel avis, profil validé / refusé / suspendu, abonnement activé / rejeté / bientôt expiré / expiré | la personne concernée (type « espace ») |
+| Demande de devis marquée « traitée » | le client |
+| Nouveau numéro dans **Admin > Paramètres du site > Application mobile** | tous (« Mise à jour disponible », avec le lien de téléchargement) |
+| **Admin > Notifications > Ajouter** (annonce, promotion) | tous, ou une seule personne |
+
+Les mises à jour d'un même prestataire sont espacées (6 h pour une offre, 12 h pour le profil et les photos) pour éviter le spam, et l'auteur
+d'un changement ne reçoit pas sa propre notification. Pour créer des données sans notifier : `with core.notifications.silencieux(): ...`
+(c'est ce que fait `seed_demo`).
+
+**Autorisations** : au premier lancement sur Android/iOS, l'application explique pourquoi elle les demande (notifications, rester actif en
+arrière-plan), puis le système affiche ses propres fenêtres. Tout se gère ensuite dans Paramètres > Autorisations. Les permissions Android sont
+déclarées dans `flet_app/pyproject.toml` (`[tool.flet.android.permission]`).
+
+**Arrière-plan : ce qui est fait et ses limites.** Flet 0.28.3 ne fournit ni service Android au premier plan ni notifications locales.
+L'application vérifie donc le serveur toutes les N minutes tant que son processus est vivant (écran allumé ou en arrière-plan), et
+dès que vous revenez dans l'application. Les nouveautés arrivent dans le **centre de notifications** (cloche de l'accueil, badge) et dans une
+bannière ; en arrière-plan, une notification système est émise si l'appareil le permet (`flet_app/notifs.py` : Android via `pyjnius` s'il est
+présent dans le build, bureau via `plyer`/`notify-send`/`osascript`). Paramètres > Notifications indique si les alertes système sont disponibles
+et le bouton « Envoyer une notification test » permet de le vérifier sur le téléphone. Android peut suspendre l'application après un long
+moment ; l'autorisation « Rester actif en arrière-plan » réduit ce risque sans l'éliminer. Pour être alerté application fermée de façon
+fiable, il faut des notifications push (Firebase Cloud Messaging), qui demandent une extension Flutter personnalisée.
+
+**Icône et écran de démarrage** : le dossier `flet_app/assets/` contient `icon.png` (icône de l'application), `splash.png` (logo de l'écran
+de démarrage natif, fond `#2A1840` défini dans `pyproject.toml`) et `logo.png` (logo de l'écran de chargement). Au lancement, l'application affiche
+le logo avec un indicateur de chargement tant que les données ne sont pas prêtes, puis ouvre l'accueil. `flet build` prend `icon.png` et `splash.png`
+automatiquement. Pour changer le logo, remplacez ces trois fichiers (mêmes noms) ou modifiez puis relancez `python outils/generer_assets.py`
+(Pillow requis). La version de l'application est dans `flet_app/pyproject.toml` **et** `flet_app/reglages.py` (`VERSION`) : gardez-les identiques.
 
 ## 7. Mise en production (PythonAnywhere, Render…)
 

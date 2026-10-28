@@ -49,7 +49,7 @@ def chemin_offre(instance, nom):
 
 
 def normaliser_telephone(numero, indicatif="237"):
-    """'674 02 18 15' -> '237674021815' (format wa.me)."""
+    """'677 12 34 56' -> '237677123456' (format wa.me)."""
     chiffres = re.sub(r"\D", "", numero or "")
     if chiffres.startswith("00"):
         chiffres = chiffres[2:]
@@ -102,7 +102,14 @@ class ParametresSite(models.Model):
     numero_mtn_momo = models.CharField("Numéro MTN MoMo", max_length=30, blank=True)
     numero_orange_money = models.CharField("Numéro Orange Money", max_length=30, blank=True)
     beneficiaire_paiement = models.CharField("Nom du bénéficiaire", max_length=120, blank=True)
-   
+    version_app_actuelle = models.CharField(
+        "Dernière version de l'application mobile", max_length=20, default="1.1.0",
+        help_text="Quand vous changez ce numéro, tous les utilisateurs reçoivent la notification « Mise à jour disponible ».",
+    )
+    lien_telechargement_app = models.URLField(
+        "Lien de téléchargement de l'application", blank=True,
+        help_text="Page ou fichier APK ouvert depuis la notification de mise à jour.",
+    )
     instructions_paiement = models.TextField(
         "Instructions de paiement",
         default=(
@@ -518,3 +525,45 @@ class Demande(models.Model):
     def lien_whatsapp(self):
         numero = normaliser_telephone(self.telephone)
         return f"https://wa.me/{numero}" if numero else ""
+
+
+# ---------------------------------------------------------------- notifications
+class Notification(models.Model):
+    """Notification affichée dans l'application mobile.
+
+    destinataire vide  -> diffusée à tous les utilisateurs (nouvelles offres, mises à jour…)
+    destinataire rempli -> privée (demande de devis reçue, abonnement activé…)
+    """
+
+    OFFRE, PRESTATAIRE, ESPACE, APPLICATION, ANNONCE = "offre", "prestataire", "espace", "application", "annonce"
+    TYPES = [
+        (OFFRE, "Nouvelle offre ou changement de prix"),
+        (PRESTATAIRE, "Nouveau prestataire ou mise à jour d'un prestataire"),
+        (ESPACE, "Activité personnelle (demande, avis, abonnement)"),
+        (APPLICATION, "Mise à jour de l'application"),
+        (ANNONCE, "Annonce ou promotion de l'équipe"),
+    ]
+
+    destinataire = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.CASCADE, related_name="notifications",
+        help_text="Laissez vide pour envoyer à tous les utilisateurs.",
+    )
+    auteur = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL, related_name="+", editable=False,
+        help_text="Celui qui a déclenché la notification : il ne la reçoit pas.",
+    )
+    type = models.CharField(max_length=12, choices=TYPES, default=ANNONCE)
+    titre = models.CharField(max_length=120)
+    message = models.CharField(max_length=300, blank=True)
+    route = models.CharField(
+        "Écran à ouvrir", max_length=160, blank=True,
+        help_text="Ex. /prestataire/mon-traiteur ou /recherche. Vide = centre de notifications.",
+    )
+    reference = models.CharField(max_length=80, blank=True, db_index=True, editable=False)
+    cree_le = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-id"]
+
+    def __str__(self):
+        return self.titre

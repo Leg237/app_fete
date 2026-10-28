@@ -9,6 +9,7 @@ from functools import wraps
 
 from django.contrib.auth import authenticate
 from django.core.paginator import Paginator
+from django.db.models import Max, Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -30,6 +31,7 @@ from .models import (
     Abonnement,
     Categorie,
     Demande,
+    Notification,
     Offre,
     ParametresSite,
     Photo,
@@ -37,6 +39,7 @@ from .models import (
     Prestataire,
     Ville,
 )
+from .notifications import purger_anciennes, rappels_abonnement
 from .services import rechercher
 
 
@@ -143,6 +146,12 @@ def s_abonnement(a):
             "debut": date_fr(a.debut), "fin": date_fr(a.fin), "jours_restants": a.jours_restants}
 
 
+def s_notification(n):
+    return {"id": n.id, "type": n.type, "titre": n.titre, "message": n.message, "route": n.route,
+            "reference": n.reference, "date": timezone.localtime(n.cree_le).strftime("%d/%m/%Y %H:%M"),
+            "prive": n.destinataire_id is not None}
+
+
 def s_prestataire(request, p, detail=False):
     data = {
         "id": p.id, "slug": p.slug, "nom": p.nom, "categorie": s_categorie(p.categorie),
@@ -204,6 +213,39 @@ def meta(request):
         "categories": [s_categorie(c) for c in Categorie.objects.filter(actif=True)],
         "villes": [{"id": v.id, "nom": v.nom} for v in Ville.objects.all()],
         "plans": [s_plan(p) for p in Plan.objects.filter(actif=True)],
+        "app": {"version": site.version_app_actuelle, "lien": site.lien_telechargement_app},
+    })
+
+
+@api()
+def notifications(request):
+    """Fil de notifications (public + privées si jeton).
+
+    ?apres=<id>   : seulement les nouveautés (ordre croissant) — utilisé par l'application en tâche de fond
+    sans `apres`  : les dernières, pour initialiser le centre de notifications
+    `dernier_id`  : plus grand identifiant visible, sert de point de départ au premier appel.
+    """
+    user = utilisateur_depuis_token(request)
+    if user is not None:
+        if hasattr(user, "prestataire"):
+            rappels_abonnement(user.prestataire)
+        qs = Notification.objects.filter(Q(destinataire__isnull=True) | Q(destinataire=user)).exclude(auteur=user)
+    else:
+        qs = Notification.objects.filter(destinataire__isnull=True)
+    try:
+        limite = max(1, min(50, int(request.GET.get("limite", 30))))
+    except ValueError:
+        limite = 30
+    apres = (request.GET.get("apres") or "").strip()
+    if apres.isdigit():
+        elements = list(qs.filter(id__gt=int(apres)).order_by("id")[:limite])
+    else:
+        elements = list(qs.order_by("-id")[:limite])[::-1]
+        if Notification.objects.count() > 2000:  # ménage occasionnel des vieilles notifications
+            purger_anciennes()
+    return JsonResponse({
+        "dernier_id": qs.aggregate(m=Max("id"))["m"] or 0,
+        "resultats": [s_notification(n) for n in elements],
     })
 
 

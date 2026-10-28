@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 
+from core.notifications import silencieux
 from core.models import (
     Abonnement,
     Avis,
@@ -125,6 +126,10 @@ class Command(BaseCommand):
         parser.add_argument("--demo", action="store_true", help="Ajoute des prestataires de démonstration")
 
     def handle(self, *args, **options):
+        with silencieux():  # le remplissage ne doit pas envoyer de notifications
+            self._remplir(*args, **options)
+
+    def _remplir(self, *args, **options):
         ParametresSite.charger()
         for i, nom in enumerate(VILLES):
             Ville.objects.get_or_create(nom=nom, defaults={"ordre": i})
