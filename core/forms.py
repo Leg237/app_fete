@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
@@ -61,11 +63,11 @@ def extraire_details(form, categorie):
 
 # ---------------------------------------------------------------- comptes
 class ConnexionForm(AuthenticationForm):
-    username = forms.CharField(label="Adresse e-mail", widget=forms.EmailInput(attrs={"autofocus": True}))
+    username = forms.CharField(label="Nom d'utilisateur ou adresse e-mail", widget=forms.TextInput(attrs={"autofocus": True}))
     password = forms.CharField(label="Mot de passe", strip=False, widget=forms.PasswordInput)
 
     def clean_username(self):
-        return self.cleaned_data["username"].strip().lower()
+        return self.cleaned_data["username"].strip()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -75,6 +77,10 @@ class ConnexionForm(AuthenticationForm):
 
 class InscriptionVisiteurForm(StyleMixin, forms.Form):
     nom_complet = forms.CharField(label="Nom complet", max_length=120)
+    nom_utilisateur = forms.CharField(
+        label="Nom d'utilisateur", required=False, max_length=30,
+        help_text="3 à 30 caractères : lettres, chiffres, point, tiret. Sert à vous connecter (laissé vide : votre e-mail).",
+    )
     email = forms.EmailField(label="Adresse e-mail")
     telephone = forms.CharField(label="Téléphone WhatsApp", max_length=30)
     ville = forms.ModelChoiceField(queryset=Ville.objects.all(), label="Ville", empty_label="Choisir une ville")
@@ -91,9 +97,19 @@ class InscriptionVisiteurForm(StyleMixin, forms.Form):
         super().__init__(*args, **kwargs)
         self.styliser()
 
+    def clean_nom_utilisateur(self):
+        nom = (self.cleaned_data.get("nom_utilisateur") or "").strip().lower()
+        if not nom:
+            return ""
+        if not re.fullmatch(r"[a-z0-9._-]{3,30}", nom):
+            raise ValidationError("3 à 30 caractères : lettres sans accent, chiffres, point, tiret ou underscore.")
+        if User.objects.filter(username__iexact=nom).exists():
+            raise ValidationError("Ce nom d'utilisateur est déjà pris. Choisissez-en un autre.")
+        return nom
+
     def clean_email(self):
         email = self.cleaned_data["email"].strip().lower()
-        if User.objects.filter(username=email).exists():
+        if User.objects.filter(username__iexact=email).exists() or User.objects.filter(email__iexact=email).exists():
             raise ValidationError("Un compte existe déjà avec cette adresse. Connectez-vous.")
         return email
 
@@ -113,7 +129,8 @@ class InscriptionVisiteurForm(StyleMixin, forms.Form):
     def creer_utilisateur(self):
         d = self.cleaned_data
         user = User.objects.create_user(
-            username=d["email"], email=d["email"], password=d["mot_de_passe"], first_name=d["nom_complet"][:150]
+            username=d.get("nom_utilisateur") or d["email"], email=d["email"], password=d["mot_de_passe"],
+            first_name=d["nom_complet"][:150]
         )
         Profil.objects.create(user=user, role=self.role, telephone=d["telephone"], ville=d["ville"], cgu_acceptees_le=timezone.now())
         return user
@@ -126,7 +143,7 @@ class InscriptionPrestataireForm(InscriptionVisiteurForm):
     nom = forms.CharField(label="Nom de l'entreprise ou du prestataire", max_length=120)
     role = Profil.PRESTATAIRE
 
-    field_order = ["nom", "nom_complet", "email", "telephone", "ville"]
+    field_order = ["nom", "nom_complet", "nom_utilisateur", "email", "telephone", "ville"]
 
     def __init__(self, *args, categorie, **kwargs):
         self.categorie = categorie
@@ -217,7 +234,7 @@ class PrestataireProfilForm(StyleMixin, forms.ModelForm):
 class OffreForm(StyleMixin, forms.ModelForm):
     class Meta:
         model = Offre
-        fields = ["titre", "description", "prix", "unite_prix", "image", "actif"]
+        fields = ["titre", "description", "prix", "unite_prix", "image", "actif", "accepte_promo"]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 3}),
             "image": forms.FileInput(attrs={"accept": "image/*"}),

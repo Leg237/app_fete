@@ -23,6 +23,7 @@ from .images import optimiser
 # Limites tant qu'aucun abonnement n'est actif (le prestataire peut préparer sa vitrine)
 LIMITE_PHOTOS_SANS_ABONNEMENT = 3
 LIMITE_OFFRES_SANS_ABONNEMENT = 3
+LIMITE_PACKS_SANS_ABONNEMENT = 1
 
 
 # ---------------------------------------------------------------- utilitaires
@@ -102,8 +103,13 @@ class ParametresSite(models.Model):
     numero_mtn_momo = models.CharField("Numéro MTN MoMo", max_length=30, blank=True)
     numero_orange_money = models.CharField("Numéro Orange Money", max_length=30, blank=True)
     beneficiaire_paiement = models.CharField("Nom du bénéficiaire", max_length=120, blank=True)
+    url_serveur = models.URLField(
+        "Adresse officielle du serveur", blank=True, max_length=200,
+        help_text="Adresse que les téléphones doivent utiliser. Modifiable aussi depuis l'application (compte administrateur) : "
+                  "tous les téléphones l'adoptent automatiquement.",
+    )
     version_app_actuelle = models.CharField(
-        "Dernière version de l'application mobile", max_length=20, default="1.1.0",
+        "Dernière version de l'application mobile", max_length=20, default="1.3.0",
         help_text="Quand vous changez ce numéro, tous les utilisateurs reçoivent la notification « Mise à jour disponible ».",
     )
     lien_telechargement_app = models.URLField(
@@ -196,6 +202,10 @@ class Profil(models.Model):
     telephone = models.CharField(max_length=30, blank=True)
     ville = models.ForeignKey(Ville, null=True, blank=True, on_delete=models.SET_NULL)
     cgu_acceptees_le = models.DateTimeField("CGU acceptées le", null=True, blank=True)
+    mdp_provisoire = models.BooleanField(
+        "Mot de passe provisoire", default=False,
+        help_text="Vrai quand un administrateur a généré un mot de passe provisoire : l'utilisateur doit le changer à la connexion.",
+    )
 
     def __str__(self):
         return f"{self.user.get_full_name() or self.user.username} ({self.role})"
@@ -350,6 +360,10 @@ class Prestataire(ImageOptimiseeMixin, models.Model):
     def est_visible(self):
         return self.statut == self.VALIDE and self.abonnement_en_cours() is not None
 
+    def limite_packs(self):
+        abo = self.abonnement_en_cours()
+        return abo.plan.max_packs if abo else LIMITE_PACKS_SANS_ABONNEMENT
+
     def limites(self):
         """(photos max, offres max) selon la formule active."""
         abo = self.abonnement_en_cours()
@@ -395,6 +409,9 @@ class Offre(ImageOptimiseeMixin, models.Model):
     unite_prix = models.CharField("Unité", max_length=40, blank=True, help_text="ex. par jour, le lot, par invité")
     image = models.ImageField(upload_to=chemin_offre, blank=True)
     actif = models.BooleanField("Visible", default=True)
+    accepte_promo = models.BooleanField(
+        "Participe aux campagnes de promotion", default=False,
+        help_text="Si coché, les clients ayant un code promo valide voient le prix réduit pendant la campagne.")
     cree_le = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -402,6 +419,33 @@ class Offre(ImageOptimiseeMixin, models.Model):
 
     def __str__(self):
         return self.titre
+
+
+class Pack(ImageOptimiseeMixin, models.Model):
+    """Regroupement de plusieurs offres d'un prestataire, vendu à un prix unique (ex. « Pack Mariage »)."""
+
+    champs_images = ("image",)
+    prestataire = models.ForeignKey(Prestataire, on_delete=models.CASCADE, related_name="packs")
+    titre = models.CharField(max_length=120)
+    description = models.TextField(blank=True)
+    prix = models.PositiveIntegerField("Prix du pack (FCFA)")
+    offres = models.ManyToManyField(Offre, related_name="packs", blank=True, verbose_name="Services inclus")
+    image = models.ImageField(upload_to=chemin_offre, blank=True)
+    actif = models.BooleanField("Visible", default=True)
+    accepte_promo = models.BooleanField("Participe aux campagnes de promotion", default=False)
+    cree_le = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-cree_le"]
+
+    def __str__(self):
+        return self.titre
+
+    @property
+    def valeur_separee(self):
+        """Somme des prix des services inclus s'ils étaient achetés séparément (None si l'un est « sur devis »)."""
+        prix = [o.prix for o in self.offres.all()]
+        return sum(prix) if prix and all(prix) else None
 
 
 # ---------------------------------------------------------------- abonnements
@@ -412,6 +456,7 @@ class Plan(models.Model):
     duree_jours = models.PositiveIntegerField("Durée (jours)", default=30)
     max_photos = models.PositiveIntegerField(default=6)
     max_offres = models.PositiveIntegerField(default=6)
+    max_packs = models.PositiveIntegerField("Packs maximum", default=3)
     mis_en_avant = models.BooleanField("Mis en avant sur l'accueil", default=False)
     description = models.CharField(max_length=160, blank=True)
     avantages = models.TextField(blank=True, help_text="Un avantage par ligne")
@@ -567,3 +612,58 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.titre
+
+
+class CodeReinitialisation(models.Model):
+    """Code à 6 chiffres envoyé par e-mail pour récupérer un mot de passe (valable 15 minutes, 5 essais)."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="codes_reinitialisation")
+    code_hash = models.CharField(max_length=128)
+    cree_le = models.DateTimeField(auto_now_add=True)
+    expire_le = models.DateTimeField()
+    tentatives = models.PositiveSmallIntegerField(default=0)
+    utilise = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-cree_le"]
+
+
+class Campagne(models.Model):
+    """Campagne de promotion : réduction accessible seulement avec le code remis par l'administrateur, pendant une durée définie."""
+
+    nom = models.CharField(max_length=120)
+    code = models.CharField("Code promo", max_length=20, unique=True)
+    pourcentage = models.PositiveSmallIntegerField(
+        "Réduction (%)", validators=[MinValueValidator(1), MaxValueValidator(90)])
+    categorie = models.ForeignKey(
+        Categorie, null=True, blank=True, on_delete=models.SET_NULL,
+        help_text="Vide = toutes les catégories. Seuls les offres et packs dont le prestataire a accepté les promotions sont concernés.")
+    debut = models.DateTimeField()
+    fin = models.DateTimeField()
+    active = models.BooleanField("Active", default=True, help_text="Décochez pour arrêter la campagne avant la date de fin.")
+    saisies = models.PositiveIntegerField("Fois où le code a été saisi", default=0, editable=False)
+    cree_par = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="+", editable=False)
+    cree_le = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-debut"]
+
+    def __str__(self):
+        return f"{self.nom} ({self.code}, -{self.pourcentage} %)"
+
+    @property
+    def statut(self):
+        maintenant = timezone.now()
+        if not self.active:
+            return "arretee"
+        if maintenant < self.debut:
+            return "programmee"
+        if maintenant > self.fin:
+            return "terminee"
+        return "en_cours"
+
+    @classmethod
+    def valides(cls, codes):
+        """Campagnes en cours dont le code fait partie de `codes`."""
+        maintenant = timezone.now()
+        return cls.objects.filter(code__in=list(codes), active=True, debut__lte=maintenant, fin__gte=maintenant)

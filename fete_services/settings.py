@@ -88,6 +88,7 @@ MESSAGE_TAGS = {niveaux.ERROR: "danger"}
 
 # --- Pages d'erreur, sécurité, récupération de mot de passe
 CSRF_FAILURE_VIEW = "core.views.echec_csrf"
+AUTHENTICATION_BACKENDS = ["core.auth_backends.ConnexionParIdentifiant"]
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # le lien reçu par e-mail reste valable 24 h
 
 # E-mails : affichés dans la console en développement ; SMTP en production (variables d'environnement)

@@ -45,7 +45,7 @@ flet run main.py            # bureau
 flet build apk              # Android
 ```
 
-Adresse du serveur : modifiable dans l'app (**Paramètres > Serveur**) ou via `FETE_API_URL`.
+Adresse du serveur : écrite dans `flet_app/config.py` (`URL_SERVEUR`) avant `flet build` ; les utilisateurs ne la saisissent jamais. Seul l'administrateur peut la changer ensuite, depuis l'application (voir section 6 quater). `FETE_API_URL` la remplace pour les tests sur PC.
 Émulateur Android : `http://10.0.2.2:8000` — téléphone réel : l'IP du PC (`http://192.168.x.x:8000`) ou votre domaine HTTPS.
 Android bloque le HTTP en clair sur les versions récentes : utilisez HTTPS en production.
 
@@ -69,7 +69,7 @@ E-mails : en développement ils s'affichent dans la console du serveur. En produ
 `python manage.py makemigrations core && python manage.py migrate`, puis redémarrez.
 
 **Écran Paramètres** (icône engrenage de l'accueil, ou onglet Compte) : compte, notifications (interrupteur général, par type, fréquence de
-vérification 5 / 15 / 30 / 60 min, « Vérifier maintenant », notification de test), autorisations et arrière-plan, adresse du serveur,
+vérification 5 / 15 / 30 / 60 min, « Vérifier maintenant », notification de test), autorisations et arrière-plan,
 effacement des données de l'appareil, version et recherche de mise à jour, liens légaux.
 
 **Notifications créées automatiquement par le serveur** (`core/signals.py`) :
@@ -87,7 +87,7 @@ Les mises à jour d'un même prestataire sont espacées (6 h pour une offre, 12 
 d'un changement ne reçoit pas sa propre notification. Pour créer des données sans notifier : `with core.notifications.silencieux(): ...`
 (c'est ce que fait `seed_demo`).
 
-**Autorisations** : au premier lancement sur Android/iOS, l'application explique pourquoi elle les demande (notifications, rester actif en
+**Autorisations** (extension `flet-permission-handler==0.1.0`, déclarée dans `pyproject.toml` : sans elle le build affiche « Unknown control: permission_handler ») : au premier lancement sur Android/iOS, l'application explique pourquoi elle les demande (notifications, rester actif en
 arrière-plan), puis le système affiche ses propres fenêtres. Tout se gère ensuite dans Paramètres > Autorisations. Les permissions Android sont
 déclarées dans `flet_app/pyproject.toml` (`[tool.flet.android.permission]`).
 
@@ -105,6 +105,68 @@ de démarrage natif, fond `#2A1840` défini dans `pyproject.toml`) et `logo.png`
 le logo avec un indicateur de chargement tant que les données ne sont pas prêtes, puis ouvre l'accueil. `flet build` prend `icon.png` et `splash.png`
 automatiquement. Pour changer le logo, remplacez ces trois fichiers (mêmes noms) ou modifiez puis relancez `python outils/generer_assets.py`
 (Pillow requis). La version de l'application est dans `flet_app/pyproject.toml` **et** `flet_app/reglages.py` (`VERSION`) : gardez-les identiques.
+
+## 6 quater. Comptes, administrateur, récupération de mot de passe et adresse du serveur
+
+**Mise à jour du serveur** : nouveaux champs et modèle `CodeReinitialisation`. Lancez
+`python manage.py makemigrations core && python manage.py migrate`.
+
+**Connexion** : nom d'utilisateur + mot de passe (majuscules ignorées). À l'inscription, l'application demande un nom d'utilisateur (3 à 30
+caractères : lettres, chiffres, `.` `_` `-`) en plus de l'e-mail, qui sert à récupérer le mot de passe. Les comptes existants gardent leur
+e-mail comme nom d'utilisateur et se connectent comme avant. Le site web accepte aussi nom d'utilisateur ou e-mail (`core/auth_backends.py`).
+Au bout de 15 échecs depuis une même adresse IP, les connexions sont bloquées 10 minutes.
+
+**Administrateur dans l'application** : tout compte « équipe » (`is_staff`) voit **Administration** dans l'onglet Compte et après sa
+connexion. Créez-le avec `python manage.py createsuperuser`, puis connectez-vous dans l'application avec ce nom d'utilisateur. Écrans :
+tableau de bord, prestataires (valider, refuser avec motif, suspendre, réactiver), abonnements (activer ou rejeter un paiement),
+utilisateurs (mot de passe provisoire), annonce envoyée à tous, adresse du serveur. Les routes `/api/v1/admin/...` refusent tout compte
+non administrateur (403), même si quelqu'un contourne l'application.
+
+**Récupération du mot de passe** : « Mot de passe oublié ? » envoie un code à 6 chiffres par e-mail (valable 15 minutes, 5 essais, un code
+par minute et par compte). Le serveur répond de la même façon que le compte existe ou non. Le nouveau mot de passe déconnecte les appareils
+déjà connectés. L'envoi d'e-mails doit être configuré (`EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, voir
+`settings.py`) ; sans cela, en mode `DEBUG`, le code s'affiche dans la console du serveur. Pour un utilisateur sans accès à son e-mail,
+l'administrateur génère un **mot de passe provisoire** (Administration > Utilisateurs) : l'utilisateur doit en choisir un nouveau dès sa
+connexion. Chacun peut aussi changer son mot de passe dans Paramètres.
+
+**Adresse du serveur** : elle est intégrée à l'application (`flet_app/config.py`, `URL_SERVEUR`, à remplir avant `flet build`) : personne
+n'a à la saisir. Quand l'administrateur la change (Administration > Adresse du serveur, ou *Admin Django > Paramètres du site > Application
+mobile*), le serveur l'annonce aux téléphones au démarrage et à chaque vérification de notifications ; chaque téléphone teste la nouvelle
+adresse et l'adopte seulement si elle répond comme Fête & Services. Limites à connaître :
+- un téléphone ne peut apprendre la nouvelle adresse que tant que l'ancienne répond : gardez-la en service jusqu'à ce que les téléphones
+  aient suivi (ouvrir l'application suffit, quelques minutes) ;
+- la nouvelle adresse doit servir les mêmes données (même base de données) ;
+- si l'adresse mémorisée ne répond plus au démarrage, l'application retombe sur l'adresse de `config.py` : mettez-y un nom de domaine
+  stable en HTTPS plutôt qu'une IP qui change.
+Sur Android, utilisez de préférence HTTPS : le trafic HTTP non chiffré peut être bloqué par le système.
+
+## 6 quinquies. Modifier ses offres, packs et campagnes de promotion par code
+
+**Mise à jour du serveur** : nouveaux modèles (`Pack`, `Campagne`) et champs (`Offre.accepte_promo`, `Plan.max_packs`).
+Lancez `python manage.py makemigrations core && python manage.py migrate`.
+
+**Modifier une offre dans l'application** : Mon espace > Mes offres. Un appui sur une offre (ou sur le crayon) ouvre le formulaire prérempli :
+titre, prix, unité, description, photo (la photo actuelle est conservée si on n'en choisit pas une autre), visibilité et participation aux promotions.
+Une offre masquée affiche l'étiquette « Masquée ».
+
+**Packs** : Mon espace > Mes packs. Un pack regroupe au moins 2 offres du prestataire à un prix unique (ex. « Pack Mariage » : DJ + décoration + traiteur).
+Les clients voient sur la fiche du prestataire les services inclus, le prix du pack et, quand toutes les offres ont un prix, l'économie réalisée.
+Le nombre de packs dépend de la formule (`Plan.max_packs`, 3 par défaut ; 1 sans abonnement) et se règle dans l'admin Django. Un nouveau pack visible
+déclenche une notification « Nouveau pack chez … ».
+
+**Campagnes de promotion par code** (administrateur) : Administration > Campagnes de promotion. En un clic : nom, réduction (1 à 90 %), durée
+(1 à 90 jours), catégorie (ou toutes), code (généré automatiquement si on le laisse vide), annonce facultative aux utilisateurs. La campagne démarre
+immédiatement et se termine toute seule à la date de fin ; elle peut être arrêtée avant. L'écran liste les campagnes, leur code, leurs dates et le nombre de
+saisies du code.
+- Le code n'est **jamais** publié dans l'annonce sauf si vous cochez « Inclure le code dans l'annonce » : sinon l'annonce invite à le demander à l'équipe.
+- Côté clients : Code promo (icône étiquette de l'accueil, ou onglet Compte) > saisir le code. Le serveur le vérifie (existant, en cours, non arrêté) ; l'application
+  le mémorise jusqu'à la fin de la campagne puis l'oublie. Pendant ce temps, les offres et packs participants affichent le prix réduit, l'ancien prix barré et « -X % ».
+  Sans code valide, le serveur ne renvoie aucune réduction : un client ne peut pas voir le prix réduit en le « devinant ».
+- **Consentement des prestataires** : une offre ou un pack n'est réduit que si son prestataire a activé « Participer aux campagnes de promotion » (désactivé par défaut).
+  L'écran de lancement indique combien d'offres et de packs sont concernés ; s'il n'y en a aucun, demandez aux prestataires d'activer l'option. La réduction est calculée
+  sur le prix affiché, arrondie au FCFA ; les offres « sur devis » ne sont pas concernées. Si deux codes sont actifs, le client obtient la meilleure réduction.
+- Essais de codes limités à 30 par heure et par adresse IP.
+Le site web n'affiche pas encore les packs ni les prix promotionnels : ils sont gérés et affichés dans l'application (les packs et campagnes sont aussi visibles dans l'admin Django).
 
 ## 7. Mise en production (PythonAnywhere, Render…)
 

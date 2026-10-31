@@ -5,10 +5,12 @@ from .models import (
     Abonnement,
     ApiToken,
     Avis,
+    Campagne,
     Categorie,
     Demande,
     Notification,
     Offre,
+    Pack,
     ParametresSite,
     Photo,
     Plan,
@@ -32,7 +34,7 @@ class ParametresSiteAdmin(admin.ModelAdmin):
                        "hebergeur_nom", "hebergeur_adresse", "hebergeur_pays")}),
         ("Application mobile", {
             "description": "Changer la version déclenche une notification « Mise à jour disponible » chez tous les utilisateurs.",
-            "fields": ("version_app_actuelle", "lien_telechargement_app")}),
+            "fields": ("url_serveur", "version_app_actuelle", "lien_telechargement_app")}),
         ("Paiement Mobile Money", {"fields": ("numero_mtn_momo", "numero_orange_money", "beneficiaire_paiement", "instructions_paiement")}),
     ]
 
@@ -164,6 +166,22 @@ class NotificationAdmin(admin.ModelAdmin):
     list_filter = ("type",)
     search_fields = ("titre", "message")
     fields = ("type", "titre", "message", "route", "destinataire")
+
+
+@admin.register(Pack)
+class PackAdmin(admin.ModelAdmin):
+    list_display = ("titre", "prestataire", "prix", "actif", "accepte_promo")
+    list_filter = ("actif", "accepte_promo")
+    search_fields = ("titre", "prestataire__nom")
+    filter_horizontal = ("offres",)
+
+
+@admin.register(Campagne)
+class CampagneAdmin(admin.ModelAdmin):
+    list_display = ("nom", "code", "pourcentage", "categorie", "debut", "fin", "active", "saisies")
+    list_filter = ("active", "categorie")
+    search_fields = ("nom", "code")
+    readonly_fields = ("saisies", "cree_le")
 
 
 admin.site.register(Profil)

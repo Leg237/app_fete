@@ -10,7 +10,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 from . import notifications as notif
-from .models import Abonnement, Avis, Demande, Notification, Offre, ParametresSite, Photo, Prestataire
+from .models import Abonnement, Avis, Demande, Notification, Offre, Pack, ParametresSite, Photo, Prestataire
 
 CHAMPS_PROFIL = ("nom", "description", "telephone", "whatsapp", "ville_id", "adresse", "logo", "couverture", "details")
 CHAMPS_OFFRE = ("titre", "description", "prix", "unite_prix", "image", "actif")
@@ -102,6 +102,16 @@ def offre_apres(sender, instance, created, **kwargs):
             titre, message = f"Offre mise à jour chez {presta.nom}", instance.titre
         notif.diffuser(Notification.OFFRE, titre, message, route=route,
                        reference=f"offre-maj-{instance.pk}", auteur=presta.user, delai=ESPACEMENT_OFFRE)
+
+
+@receiver(post_save, sender=Pack)
+def pack_apres(sender, instance, created, **kwargs):
+    if not created or notif.est_silencieux() or not instance.actif:
+        return
+    presta = instance.prestataire
+    if presta.est_visible:
+        notif.diffuser(Notification.OFFRE, f"Nouveau pack chez {presta.nom}", f"{instance.titre} · {instance.prix:,} FCFA".replace(",", " "),
+                       route=f"/prestataire/{presta.slug}", reference=f"pack-{instance.pk}", auteur=presta.user)
 
 
 @receiver(post_save, sender=Photo)
